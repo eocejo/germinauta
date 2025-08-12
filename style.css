@@ -132,6 +132,7 @@ body {
 #buttons .action .count {
   margin-top: 2px;
   font-size: 14px;
+  text-align: center;
 }
 
 #buttons .action:active {

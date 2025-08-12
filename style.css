@@ -32,6 +32,12 @@ body {
   height: 100%;
   object-fit: cover;
   z-index: 10;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+#intro-video.fade-out {
+  opacity: 0;
 }
 
 #app {
@@ -69,6 +75,7 @@ body {
   position: relative;
   height: 100%;
   overflow: hidden;
+  background: url("background.png") center / cover no-repeat;
 }
 
 #environment {

@@ -126,6 +126,16 @@ function setNextDefaults() {
 }
 setNextDefaults();
 
+newIcon.addEventListener("click", () => {
+  if (newIcon.showPicker) {
+    newIcon.showPicker();
+  }
+});
+
+newIcon.addEventListener("input", () => {
+  newIcon.value = [...newIcon.value][0] || "";
+});
+
 let dragIndex = null;
 document.addEventListener("pointerup", () => {
   dragIndex = null;
@@ -161,9 +171,14 @@ updateStats();
 if (introVideo) {
   introVideo.removeAttribute("controls");
   introVideo.play().catch(() => {});
-  setTimeout(() => {
+  introVideo.addEventListener("timeupdate", () => {
+    if (introVideo.duration - introVideo.currentTime <= 0.3) {
+      introVideo.classList.add("fade-out");
+    }
+  });
+  introVideo.addEventListener("ended", () => {
     introVideo.remove();
-  }, 3000);
+  });
 }
 
 if (!loadJSON(LS_ONBOARD, false)) {
@@ -362,7 +377,7 @@ addButton.addEventListener("click", () => {
   const label = newLabel.value.trim().slice(0, LABEL_LIMIT);
   if (!label) return;
   const color = newColor.value;
-  const icon = newIcon.value.trim();
+  const icon = [...newIcon.value.trim()][0] || "";
   settings.buttons.push({ label, color, icon });
   newLabel.value = "";
   setNextDefaults();

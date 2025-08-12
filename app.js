@@ -6,7 +6,7 @@ const defaultSettings = {
   buttons: [{ label: "Decision" }], // por defecto 1
   showStatsHUD: false,
   stage: 1,
-  stageProgress: 0
+  stageProgress: 0,
 };
 
 const thresholds = [8, 20, 80, 150, 300]; // 1→2, 2→3, 3→4, 4→5, 5→6
@@ -24,6 +24,7 @@ const statToday = document.getElementById("stat-today");
 const statWeek = document.getElementById("stat-week");
 const statMonth = document.getElementById("stat-month");
 const statTotal = document.getElementById("stat-total");
+const closeStats = document.getElementById("close-stats");
 const sfxTap = document.getElementById("sfx-tap");
 const sfxStage = document.getElementById("sfx-stage");
 const sfxComplete = document.getElementById("sfx-complete");
@@ -34,6 +35,7 @@ const newLabel = document.getElementById("new-label");
 const buttonList = document.getElementById("button-list");
 const toggleStats = document.getElementById("toggle-stats");
 const closeSettings = document.getElementById("close-settings");
+const resetApp = document.getElementById("reset-app");
 
 // Init
 renderStage();
@@ -55,7 +57,9 @@ function handleAction(label) {
 
   // Progreso de etapa
   settings.stageProgress += 1;
-  const canAdvance = settings.stage < 6 && settings.stageProgress >= thresholds[settings.stage - 1];
+  const canAdvance =
+    settings.stage < 6 &&
+    settings.stageProgress >= thresholds[settings.stage - 1];
 
   if (canAdvance) {
     settings.stage += 1;
@@ -120,7 +124,11 @@ function updateStats() {
     const d = new Date(item.timestamp);
     if (isSameDay(d, now)) today++;
     if (isSameISOWeek(d, now)) week++;
-    if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) month++;
+    if (
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear()
+    )
+      month++;
   }
 
   statToday.textContent = String(today);
@@ -130,7 +138,11 @@ function updateStats() {
 }
 
 function isSameDay(a, b) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 function isSameISOWeek(a, b) {
@@ -151,6 +163,10 @@ function isoWeek(d) {
 // HUD y Settings
 hudStatsBtn.addEventListener("click", () => {
   statsSheet.hidden = !statsSheet.hidden;
+});
+
+closeStats.addEventListener("click", () => {
+  statsSheet.hidden = true;
 });
 
 btnSettings.addEventListener("click", () => {
@@ -176,6 +192,14 @@ toggleStats.addEventListener("change", () => {
   settings.showStatsHUD = toggleStats.checked;
   saveJSON(LS_SETTINGS, settings);
   updateHUDStatsVisibility();
+});
+
+resetApp.addEventListener("click", () => {
+  const ok = confirm("¿Reiniciar la app? Se borrarán todos los datos.");
+  if (!ok) return;
+  localStorage.removeItem(LS_SETTINGS);
+  localStorage.removeItem(LS_LOG);
+  location.reload();
 });
 
 function updateHUDStatsVisibility() {
@@ -258,7 +282,9 @@ function applyDownwardArc(container) {
   const mid = (n - 1) / 2;
   const amplitude = 10; // px extra hacia arriba en extremos
   items.forEach((el, i) => {
-    const offset = -Math.pow(i - mid, 2) * (amplitude / (mid === 0 ? 1 : mid * mid)) + amplitude;
+    const offset =
+      -Math.pow(i - mid, 2) * (amplitude / (mid === 0 ? 1 : mid * mid)) +
+      amplitude;
     // Queremos el centro más bajo. Desplazamos Y positiva hacia abajo.
     const down = amplitude - offset; // centro más grande
     el.style.transform = `translateY(${down.toFixed(1)}px)`;

@@ -32,7 +32,10 @@ body {
 }
 
 #hud {
-  display: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px;
 }
 
 #hud button {
@@ -43,6 +46,14 @@ body {
   border-radius: 10px;
   box-shadow: var(--shadow);
   cursor: pointer;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
+}
+
+#hud button:active {
+  transform: translateY(2px) scale(0.96);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 #scene {
@@ -112,6 +123,7 @@ body {
 }
 
 .panel {
+  position: relative;
   width: min(92vw, 520px);
   background: var(--panel);
   border-radius: 16px;
@@ -161,6 +173,21 @@ body {
   padding: 6px 8px;
   border-radius: 8px;
   cursor: pointer;
+  box-shadow: var(--shadow);
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
+}
+
+.panel button:active {
+  transform: translateY(2px) scale(0.96);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#stats #close-stats {
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 
 /* Oculto nativo con atributo hidden */

@@ -7,7 +7,7 @@ const translations = {
     showCounts: "Show counts",
     hideCounts: "Hide counts",
     reset: "Reset",
-    refresh: "Update",
+    refresh: "Clear Cache",
     close: "Close",
     today: "Today",
     week: "Week",
@@ -17,7 +17,7 @@ const translations = {
       "Tap buttons to grow your creature and keep track of your habits.",
     storageError: "Storage unavailable. Progress won't be saved.",
     confirmReset: "Reset the app? This will erase all data.",
-    confirmRefresh: "Update the app? This clears cache.",
+    confirmRefresh: "Clear the app cache? This will remove cached files.",
     showStats: "Show stats",
     defaultButton: "Decision",
   },
@@ -28,8 +28,8 @@ const translations = {
     buttonName: "Nombre del botón",
     showCounts: "Mostrar contadores",
     hideCounts: "Ocultar contadores",
-    reset: "Reiniciar",
-    refresh: "Actualizar",
+    reset: "Renacer",
+    refresh: "Borrar Cache",
     close: "Cerrar",
     today: "Hoy",
     week: "Semana",
@@ -38,8 +38,8 @@ const translations = {
     onboarding:
       "Presiona los botones para hacer crecer tu criatura y seguir tus hábitos.",
     storageError: "Almacenamiento no disponible. El progreso no se guardará.",
-    confirmReset: "¿Reiniciar la app? Se borrarán todos los datos.",
-    confirmRefresh: "¿Actualizar la app? Se borrará la caché de la página.",
+    confirmReset: "¿Renacer la app? Se borrarán todos los datos.",
+    confirmRefresh: "¿Borrar la cache? Se borrará la caché de la página.",
     showStats: "Mostrar estadísticas",
     defaultButton: "Decisión",
   },
@@ -87,7 +87,6 @@ const addButton = document.getElementById("add-button");
 const newLabel = document.getElementById("new-label");
 const newIcon = document.getElementById("new-icon");
 const newColor = document.getElementById("new-color");
-const newPreview = document.getElementById("new-preview");
 const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
 const closeSettings = document.getElementById("close-settings");
@@ -140,6 +139,8 @@ renderButtons();
 renderSettings();
 updateStats();
 if (introVideo) {
+  introVideo.removeAttribute("controls");
+  introVideo.play().catch(() => {});
   setTimeout(() => {
     introVideo.remove();
   }, 3000);
@@ -326,18 +327,6 @@ closeSettings.addEventListener("click", () => {
   renderButtons();
 });
 
-function updateNewPreview() {
-  newPreview.textContent = `${newIcon.value ? newIcon.value + " " : ""}${
-    newLabel.value
-  }`;
-  newPreview.style.background = newColor.value;
-}
-
-[newLabel, newIcon, newColor].forEach((el) =>
-  el.addEventListener("input", updateNewPreview),
-);
-updateNewPreview();
-
 addButton.addEventListener("click", () => {
   const label = newLabel.value.trim();
   if (!label) return;
@@ -347,7 +336,6 @@ addButton.addEventListener("click", () => {
   newLabel.value = "";
   newIcon.value = "";
   newColor.value = "#ffcc66";
-  updateNewPreview();
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
   renderButtons();

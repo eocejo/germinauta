@@ -37,6 +37,7 @@ const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
+const refreshApp = document.getElementById("refresh-app");
 const introVideo = document.getElementById("intro-video");
 
 let dragIndex = null;
@@ -221,6 +222,24 @@ resetApp.addEventListener("click", () => {
   if (!ok) return;
   localStorage.removeItem(LS_SETTINGS);
   localStorage.removeItem(LS_LOG);
+  location.reload();
+});
+
+refreshApp.addEventListener("click", async () => {
+  const ok = confirm("¿Actualizar la app? Se borrará la caché de la página.");
+  if (!ok) return;
+  if ("serviceWorker" in navigator) {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) {
+      await reg.unregister();
+    }
+  }
+  if (window.caches) {
+    const names = await caches.keys();
+    for (const name of names) {
+      await caches.delete(name);
+    }
+  }
   location.reload();
 });
 

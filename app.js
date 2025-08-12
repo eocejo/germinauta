@@ -26,6 +26,7 @@ const statMonth = document.getElementById("stat-month");
 const statTotal = document.getElementById("stat-total");
 const sfxTap = document.getElementById("sfx-tap");
 const sfxStage = document.getElementById("sfx-stage");
+const sfxAction = document.getElementById("sfx-action");
 const btnSettings = document.getElementById("btn-settings");
 const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
@@ -52,6 +53,9 @@ function handleAction(label) {
   logs.push({ decisionLabel: label, timestamp: now });
   saveJSON(LS_LOG, logs);
 
+  playTapSound();
+  setTimeout(playActionSound, 3000); // feedback after a few seconds
+
   // Progreso de etapa
   settings.stageProgress += 1;
   const canAdvance = settings.stage < 6 && settings.stageProgress >= thresholds[settings.stage - 1];
@@ -62,8 +66,6 @@ function handleAction(label) {
     saveJSON(LS_SETTINGS, settings);
     renderStage();
     playStageSound();
-  } else {
-    playTapSound();
   }
 
   updateStats();
@@ -92,6 +94,9 @@ function playTapSound() {
 }
 function playStageSound() {
   safePlay(sfxStage);
+}
+function playActionSound() {
+  safePlay(sfxAction);
 }
 function safePlay(audioEl) {
   try {

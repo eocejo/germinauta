@@ -32,6 +32,11 @@ body {
   height: 100%;
   object-fit: cover;
   z-index: 10;
+  transition: opacity 0.5s ease;
+}
+
+#intro-video.fade-out {
+  opacity: 0;
 }
 
 #app {
@@ -69,6 +74,7 @@ body {
   position: relative;
   height: 100%;
   overflow: hidden;
+  background: url("assets/images/background.png") center/cover no-repeat;
 }
 
 #environment {
@@ -109,6 +115,7 @@ body {
   width: 64px;
   height: 64px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
@@ -123,6 +130,15 @@ body {
     box-shadow 0.2s ease,
     background 0.3s ease;
   transform: translateY(var(--arc-y));
+}
+#buttons .action .label {
+  text-align: center;
+}
+
+#buttons .action .count {
+  margin-top: 2px;
+  font-size: 14px;
+  text-align: center;
 }
 
 #buttons .action:active {
@@ -205,6 +221,7 @@ body {
   height: 40px;
   padding: 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  flex-direction: row;
 }
 .panel button {
   border: 0;

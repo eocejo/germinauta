@@ -1,4 +1,4 @@
-const CACHE = "habit-reinforcer-v1";
+const CACHE = "habit-reinforcer-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -16,6 +16,7 @@ const ASSETS = [
   "./assets/sounds/tap.wav",
   "./assets/sounds/stage-change.wav",
   "./assets/sounds/action-complete.wav",
+  "./assets/videos/intro.mp4",
 ];
 
 self.addEventListener("install", (e) => {

@@ -13,27 +13,27 @@ const ASSETS = [
   "./assets/images/stage4.png",
   "./assets/images/stage5.png",
   "./assets/images/stage6.png",
-  "./assets/tap.wav",
-  "./assets/stage-change.wav",
-  "./assets/action-complete.wav"
+  "./assets/sounds/tap.wav",
+  "./assets/sounds/stage-change.wav",
+  "./assets/sounds/action-complete.wav",
 ];
 
 self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(ASSETS))
-  );
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
 });
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    )
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(
+          keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)),
+        ),
+      ),
   );
 });
 
 self.addEventListener("fetch", (e) => {
-  e.respondWith(
-    caches.match(e.request).then((r) => r || fetch(e.request))
-  );
+  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
 });

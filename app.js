@@ -1,18 +1,71 @@
+const translations = {
+  en: {
+    settings: "Settings",
+    habits: "Habits",
+    add: "Add",
+    buttonName: "Button name",
+    showCounts: "Show counts",
+    hideCounts: "Hide counts",
+    reset: "Reset",
+    refresh: "Update",
+    close: "Close",
+    today: "Today",
+    week: "Week",
+    month: "Month",
+    total: "Total",
+    onboarding:
+      "Tap buttons to grow your creature and keep track of your habits.",
+    storageError: "Storage unavailable. Progress won't be saved.",
+    confirmReset: "Reset the app? This will erase all data.",
+    confirmRefresh: "Update the app? This clears cache.",
+    showStats: "Show stats",
+    defaultButton: "Decision",
+  },
+  es: {
+    settings: "Configuración",
+    habits: "Hábitos",
+    add: "Agregar",
+    buttonName: "Nombre del botón",
+    showCounts: "Mostrar contadores",
+    hideCounts: "Ocultar contadores",
+    reset: "Reiniciar",
+    refresh: "Actualizar",
+    close: "Cerrar",
+    today: "Hoy",
+    week: "Semana",
+    month: "Mes",
+    total: "Total",
+    onboarding:
+      "Presiona los botones para hacer crecer tu criatura y seguir tus hábitos.",
+    storageError: "Almacenamiento no disponible. El progreso no se guardará.",
+    confirmReset: "¿Reiniciar la app? Se borrarán todos los datos.",
+    confirmRefresh: "¿Actualizar la app? Se borrará la caché de la página.",
+    showStats: "Mostrar estadísticas",
+    defaultButton: "Decisión",
+  },
+};
+
+const lang = navigator.language.startsWith("es") ? "es" : "en";
+document.documentElement.lang = lang;
+const t = (k) => translations[lang][k];
+
 // Config persistente
 const LS_SETTINGS = "habitSettings";
 const LS_LOG = "habitLog";
+const LS_ONBOARD = "habitOnboard";
+
+const storageAvailable = isStorageAvailable();
 
 const defaultSettings = {
-  buttons: [{ label: "Decision", color: "#ffcc66" }], // por defecto 1
+  buttons: [{ label: t("defaultButton"), color: "#ffcc66", icon: "" }],
   showButtonCounts: false,
   stage: 1,
   stageProgress: 0,
 };
 
-const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
-
 let settings = loadJSON(LS_SETTINGS, defaultSettings);
 let logs = loadJSON(LS_LOG, []);
+const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
 // Elementos
 const creatureEl = document.getElementById("creature");
@@ -32,18 +85,54 @@ const btnSettings = document.getElementById("btn-settings");
 const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
 const newLabel = document.getElementById("new-label");
+const newIcon = document.getElementById("new-icon");
 const newColor = document.getElementById("new-color");
+const newPreview = document.getElementById("new-preview");
 const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
 const refreshApp = document.getElementById("refresh-app");
 const introVideo = document.getElementById("intro-video");
+const lblToday = document.getElementById("lbl-today");
+const lblWeek = document.getElementById("lbl-week");
+const lblMonth = document.getElementById("lbl-month");
+const lblTotal = document.getElementById("lbl-total");
+const settingsTitle = document.getElementById("settings-title");
+const settingsHabits = document.getElementById("settings-habits");
+const onboardingSheet = document.getElementById("onboarding");
+const onboardingText = document.getElementById("onboarding-text");
+const closeOnboarding = document.getElementById("close-onboarding");
+const storageErrorSheet = document.getElementById("storage-error");
+const storageErrorText = document.getElementById("storage-error-text");
+const chartCanvas = document.getElementById("chart-week");
 
 let dragIndex = null;
 document.addEventListener("pointerup", () => {
   dragIndex = null;
 });
+
+// Traducción inicial
+hudStatsBtn.setAttribute("aria-label", t("showStats"));
+btnSettings.setAttribute("aria-label", t("settings"));
+closeStats.setAttribute("aria-label", t("close"));
+settingsTitle.textContent = t("settings");
+settingsHabits.textContent = t("habits");
+newLabel.placeholder = t("buttonName");
+addButton.textContent = t("add");
+resetApp.textContent = t("reset");
+refreshApp.textContent = t("refresh");
+closeSettings.textContent = t("close");
+closeOnboarding.textContent = t("close");
+lblToday.textContent = `${t("today")}:`;
+lblWeek.textContent = `${t("week")}:`;
+lblMonth.textContent = `${t("month")}:`;
+lblTotal.textContent = `${t("total")}:`;
+toggleCounts.textContent = settings.showButtonCounts
+  ? t("hideCounts")
+  : t("showCounts");
+onboardingText.textContent = t("onboarding");
+storageErrorText.textContent = t("storageError");
 
 // Init
 renderStage();
@@ -54,6 +143,18 @@ if (introVideo) {
   setTimeout(() => {
     introVideo.remove();
   }, 3000);
+}
+
+if (!loadJSON(LS_ONBOARD, false)) {
+  onboardingSheet.hidden = false;
+  closeOnboarding.addEventListener("click", () => {
+    onboardingSheet.hidden = true;
+    saveJSON(LS_ONBOARD, true);
+  });
+}
+
+if (!storageAvailable) {
+  storageErrorSheet.hidden = false;
 }
 
 // Registrar SW
@@ -97,9 +198,8 @@ function renderButtons() {
     const btn = document.createElement("button");
     btn.className = "action";
     const count = counts[b.label] || 0;
-    btn.textContent = settings.showButtonCounts
-      ? `${b.label} ${count}`
-      : b.label;
+    const base = settings.showButtonCounts ? `${b.label} ${count}` : b.label;
+    btn.textContent = `${b.icon ? b.icon + " " : ""}${base}`;
     btn.style.background = b.color || "#ffcc66";
     btn.addEventListener("click", () => handleAction(b.label));
     buttonsEl.appendChild(btn);
@@ -153,6 +253,7 @@ function updateStats() {
   statWeek.textContent = String(week);
   statMonth.textContent = String(month);
   statTotal.textContent = String(total);
+  drawChart();
 }
 
 function isSameDay(a, b) {
@@ -178,6 +279,35 @@ function isoWeek(d) {
   return { year: date.getUTCFullYear(), week };
 }
 
+function getLast7DaysCounts() {
+  const counts = Array(7).fill(0);
+  const now = new Date();
+  for (const item of logs) {
+    const d = new Date(item.timestamp);
+    const diff = Math.floor((now - d) / 86400000);
+    if (diff >= 0 && diff < 7) {
+      counts[6 - diff]++;
+    }
+  }
+  return counts;
+}
+
+function drawChart() {
+  if (!chartCanvas) return;
+  const ctx = chartCanvas.getContext("2d");
+  const data = getLast7DaysCounts();
+  const w = chartCanvas.width;
+  const h = chartCanvas.height;
+  ctx.clearRect(0, 0, w, h);
+  const max = Math.max(...data, 1);
+  const barWidth = w / data.length;
+  data.forEach((val, i) => {
+    const barHeight = (val / max) * (h - 20);
+    ctx.fillStyle = "#66ccff";
+    ctx.fillRect(i * barWidth + 4, h - barHeight - 10, barWidth - 8, barHeight);
+  });
+}
+
 // HUD y Settings
 hudStatsBtn.addEventListener("click", () => {
   statsSheet.hidden = !statsSheet.hidden;
@@ -196,13 +326,28 @@ closeSettings.addEventListener("click", () => {
   renderButtons();
 });
 
+function updateNewPreview() {
+  newPreview.textContent = `${newIcon.value ? newIcon.value + " " : ""}${
+    newLabel.value
+  }`;
+  newPreview.style.background = newColor.value;
+}
+
+[newLabel, newIcon, newColor].forEach((el) =>
+  el.addEventListener("input", updateNewPreview),
+);
+updateNewPreview();
+
 addButton.addEventListener("click", () => {
   const label = newLabel.value.trim();
   if (!label) return;
   const color = newColor.value;
-  settings.buttons.push({ label, color });
+  const icon = newIcon.value.trim();
+  settings.buttons.push({ label, color, icon });
   newLabel.value = "";
+  newIcon.value = "";
   newColor.value = "#ffcc66";
+  updateNewPreview();
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
   renderButtons();
@@ -212,13 +357,13 @@ toggleCounts.addEventListener("click", () => {
   settings.showButtonCounts = !settings.showButtonCounts;
   saveJSON(LS_SETTINGS, settings);
   toggleCounts.textContent = settings.showButtonCounts
-    ? "Ocultar contadores"
-    : "Mostrar contadores";
+    ? t("hideCounts")
+    : t("showCounts");
   renderButtons();
 });
 
 resetApp.addEventListener("click", () => {
-  const ok = confirm("¿Reiniciar la app? Se borrarán todos los datos.");
+  const ok = confirm(t("confirmReset"));
   if (!ok) return;
   localStorage.removeItem(LS_SETTINGS);
   localStorage.removeItem(LS_LOG);
@@ -226,7 +371,7 @@ resetApp.addEventListener("click", () => {
 });
 
 refreshApp.addEventListener("click", async () => {
-  const ok = confirm("¿Actualizar la app? Se borrará la caché de la página.");
+  const ok = confirm(t("confirmRefresh"));
   if (!ok) return;
   if ("serviceWorker" in navigator) {
     const regs = await navigator.serviceWorker.getRegistrations();
@@ -245,8 +390,8 @@ refreshApp.addEventListener("click", async () => {
 
 function renderSettings() {
   toggleCounts.textContent = settings.showButtonCounts
-    ? "Ocultar contadores"
-    : "Mostrar contadores";
+    ? t("hideCounts")
+    : t("showCounts");
 
   buttonList.innerHTML = "";
   settings.buttons.forEach((b, idx) => {
@@ -278,6 +423,16 @@ function renderSettings() {
       renderButtons();
     });
 
+    const icon = document.createElement("input");
+    icon.type = "text";
+    icon.value = b.icon || "";
+    icon.addEventListener("input", () => {
+      settings.buttons[idx].icon = icon.value;
+      saveJSON(LS_SETTINGS, settings);
+      renderButtons();
+      updatePreview();
+    });
+
     const color = document.createElement("input");
     color.type = "color";
     color.value = b.color || "#ffcc66";
@@ -285,7 +440,23 @@ function renderSettings() {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);
       renderButtons();
+      updatePreview();
     });
+
+    const preview = document.createElement("button");
+    preview.className = "action";
+    preview.type = "button";
+    preview.disabled = true;
+    const updatePreview = () => {
+      preview.textContent = `${icon.value ? icon.value + " " : ""}${
+        input.value
+      }`;
+      preview.style.background = color.value;
+    };
+    updatePreview();
+    input.addEventListener("input", updatePreview);
+    icon.addEventListener("input", updatePreview);
+    color.addEventListener("input", updatePreview);
 
     const del = document.createElement("button");
     del.textContent = "✕";
@@ -296,7 +467,7 @@ function renderSettings() {
       renderButtons();
     });
 
-    li.append(handle, input, color, del);
+    li.append(handle, input, icon, color, preview, del);
     buttonList.appendChild(li);
   });
 
@@ -305,6 +476,7 @@ function renderSettings() {
 
 // Utilidades
 function loadJSON(key, fallback) {
+  if (!storageAvailable) return fallback;
   try {
     return JSON.parse(localStorage.getItem(key)) ?? fallback;
   } catch {
@@ -313,6 +485,7 @@ function loadJSON(key, fallback) {
 }
 
 function saveJSON(key, val) {
+  if (!storageAvailable) return;
   localStorage.setItem(key, JSON.stringify(val));
 }
 
@@ -333,4 +506,15 @@ function applyBottomArc(container) {
     const y = Math.sin(angle) * radius;
     el.style.setProperty("--arc-y", `${y.toFixed(1)}px`);
   });
+}
+
+function isStorageAvailable() {
+  try {
+    const x = "__test__";
+    localStorage.setItem(x, x);
+    localStorage.removeItem(x);
+    return true;
+  } catch {
+    return false;
+  }
 }

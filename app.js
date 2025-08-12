@@ -24,6 +24,7 @@ const statToday = document.getElementById("stat-today");
 const statWeek = document.getElementById("stat-week");
 const statMonth = document.getElementById("stat-month");
 const statTotal = document.getElementById("stat-total");
+const closeStats = document.getElementById("close-stats");
 const sfxTap = document.getElementById("sfx-tap");
 const sfxStage = document.getElementById("sfx-stage");
 const sfxComplete = document.getElementById("sfx-complete");
@@ -34,6 +35,7 @@ const newLabel = document.getElementById("new-label");
 const buttonList = document.getElementById("button-list");
 const toggleStats = document.getElementById("toggle-stats");
 const closeSettings = document.getElementById("close-settings");
+const resetApp = document.getElementById("reset-app");
 
 // Init
 renderStage();
@@ -163,6 +165,10 @@ hudStatsBtn.addEventListener("click", () => {
   statsSheet.hidden = !statsSheet.hidden;
 });
 
+closeStats.addEventListener("click", () => {
+  statsSheet.hidden = true;
+});
+
 btnSettings.addEventListener("click", () => {
   settingsSheet.hidden = false;
 });
@@ -186,6 +192,14 @@ toggleStats.addEventListener("change", () => {
   settings.showStatsHUD = toggleStats.checked;
   saveJSON(LS_SETTINGS, settings);
   updateHUDStatsVisibility();
+});
+
+resetApp.addEventListener("click", () => {
+  const ok = confirm("¿Reiniciar la app? Se borrarán todos los datos.");
+  if (!ok) return;
+  localStorage.removeItem(LS_SETTINGS);
+  localStorage.removeItem(LS_LOG);
+  location.reload();
 });
 
 function updateHUDStatsVisibility() {

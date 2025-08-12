@@ -15,7 +15,12 @@ body {
 }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
   background: var(--bg);
   color: #123;
 }
@@ -126,6 +131,10 @@ body {
   gap: 10px;
 }
 
+#stats .panel .row {
+  grid-column: 1 / -1;
+}
+
 .row {
   display: flex;
   gap: 8px;
@@ -151,7 +160,7 @@ body {
 #button-list input {
   width: 100%;
 }
-#button-list button {
+.panel button {
   border: 0;
   background: var(--accent);
   color: white;

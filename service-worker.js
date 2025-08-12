@@ -2,6 +2,7 @@ const CACHE = "habit-reinforcer-v2";
 const ASSETS = [
   "./",
   "./index.html",
+  "./offline.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
@@ -36,5 +37,20 @@ self.addEventListener("activate", (e) => {
 });
 
 self.addEventListener("fetch", (e) => {
-  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)));
+  e.respondWith(
+    fetch(e.request)
+      .then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        return res;
+      })
+      .catch(() =>
+        caches.match(e.request).then((r) => {
+          if (r) return r;
+          if (e.request.mode === "navigate") {
+            return caches.match("./offline.html");
+          }
+        }),
+      ),
+  );
 });

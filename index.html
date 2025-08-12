@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,21 +49,38 @@
       <section id="stats" hidden>
         <div class="panel">
           <button id="close-stats" class="close" aria-label="Cerrar">✕</button>
-          <div><strong>Hoy:</strong> <span id="stat-today">0</span></div>
-          <div><strong>Semana:</strong> <span id="stat-week">0</span></div>
-          <div><strong>Mes:</strong> <span id="stat-month">0</span></div>
-          <div><strong>Total:</strong> <span id="stat-total">0</span></div>
+          <div>
+            <strong id="lbl-today">Hoy:</strong> <span id="stat-today">0</span>
+          </div>
+          <div>
+            <strong id="lbl-week">Semana:</strong> <span id="stat-week">0</span>
+          </div>
+          <div>
+            <strong id="lbl-month">Mes:</strong> <span id="stat-month">0</span>
+          </div>
+          <div>
+            <strong id="lbl-total">Total:</strong>
+            <span id="stat-total">0</span>
+          </div>
+          <canvas id="chart-week" width="300" height="150"></canvas>
         </div>
       </section>
 
       <section id="settings" hidden>
         <div class="panel">
-          <h2>Configuración</h2>
-          <h3>Hábitos</h3>
+          <h2 id="settings-title">Configuración</h2>
+          <h3 id="settings-habits">Hábitos</h3>
           <ul id="button-list"></ul>
           <div class="row">
             <input id="new-label" type="text" placeholder="Nombre del botón" />
+            <input id="new-icon" type="text" placeholder="😀" />
             <input id="new-color" type="color" value="#ffcc66" />
+            <button
+              id="new-preview"
+              class="action"
+              type="button"
+              disabled
+            ></button>
             <button id="add-button">Agregar</button>
           </div>
           <div class="row">
@@ -74,6 +91,21 @@
           <div class="row end">
             <button id="close-settings">Cerrar</button>
           </div>
+        </div>
+      </section>
+
+      <section id="onboarding" hidden>
+        <div class="panel">
+          <p id="onboarding-text"></p>
+          <div class="row end">
+            <button id="close-onboarding">OK</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="storage-error" hidden>
+        <div class="panel">
+          <p id="storage-error-text"></p>
         </div>
       </section>
     </div>

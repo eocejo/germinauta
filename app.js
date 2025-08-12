@@ -85,13 +85,12 @@ function renderButtons() {
     btn.addEventListener("click", () => handleAction(b.label));
     buttonsEl.appendChild(btn);
   });
-  applyDownwardArc(buttonsEl);
+  applyBottomArc(buttonsEl);
 }
 
 function renderStage() {
   const s = settings.stage;
   creatureEl.src = `assets/images/stage${s}.png`;
-  envEl.style.backgroundImage = `url('assets/images/stage${s}.png')`;
 }
 
 function playTapSound() {
@@ -275,18 +274,15 @@ function move(arr, from, to) {
 }
 
 // Curva hacia abajo en el centro, dinámica
-function applyDownwardArc(container) {
+function applyBottomArc(container) {
   const items = Array.from(container.children);
   const n = items.length;
   if (n === 0) return;
-  const mid = (n - 1) / 2;
-  const amplitude = 10; // px extra hacia arriba en extremos
+  const radius = 40;
+  const step = Math.PI / (n - 1);
   items.forEach((el, i) => {
-    const offset =
-      -Math.pow(i - mid, 2) * (amplitude / (mid === 0 ? 1 : mid * mid)) +
-      amplitude;
-    // Queremos el centro más bajo. Desplazamos Y positiva hacia abajo.
-    const down = amplitude - offset; // centro más grande
-    el.style.transform = `translateY(${down.toFixed(1)}px)`;
+    const angle = step * i;
+    const y = Math.sin(angle) * radius;
+    el.style.setProperty("--arc-y", `${y.toFixed(1)}px`);
   });
 }

@@ -63,6 +63,17 @@ const defaultSettings = {
   stageProgress: 0,
 };
 
+const LABEL_LIMIT = 10;
+const defaultColors = [
+  "#ffcc66",
+  "#66ff66",
+  "#66ccff",
+  "#ff6666",
+  "#cc66ff",
+  "#ff9966",
+];
+const defaultEmojis = ["😀", "💪", "📚", "🍎", "🧘", "🚰"];
+
 let settings = loadJSON(LS_SETTINGS, defaultSettings);
 let logs = loadJSON(LS_LOG, []);
 const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
@@ -85,6 +96,7 @@ const btnSettings = document.getElementById("btn-settings");
 const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
 const newLabel = document.getElementById("new-label");
+newLabel.maxLength = LABEL_LIMIT;
 const newIcon = document.getElementById("new-icon");
 const newColor = document.getElementById("new-color");
 const buttonList = document.getElementById("button-list");
@@ -105,6 +117,14 @@ const closeOnboarding = document.getElementById("close-onboarding");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
 const chartCanvas = document.getElementById("chart-week");
+
+let nextDefault = settings.buttons.length;
+function setNextDefaults() {
+  newColor.value = defaultColors[nextDefault % defaultColors.length];
+  newIcon.value = defaultEmojis[nextDefault % defaultEmojis.length];
+  nextDefault += 1;
+}
+setNextDefaults();
 
 let dragIndex = null;
 document.addEventListener("pointerup", () => {
@@ -199,8 +219,19 @@ function renderButtons() {
     const btn = document.createElement("button");
     btn.className = "action";
     const count = counts[b.label] || 0;
-    const base = settings.showButtonCounts ? `${b.label} ${count}` : b.label;
-    btn.textContent = `${b.icon ? b.icon + " " : ""}${base}`;
+
+    const labelSpan = document.createElement("span");
+    labelSpan.className = "label";
+    labelSpan.textContent = `${b.icon ? b.icon + " " : ""}${b.label}`;
+    btn.appendChild(labelSpan);
+
+    if (settings.showButtonCounts) {
+      const countSpan = document.createElement("span");
+      countSpan.className = "count";
+      countSpan.textContent = String(count);
+      btn.appendChild(countSpan);
+    }
+
     btn.style.background = b.color || "#ffcc66";
     btn.addEventListener("click", () => handleAction(b.label));
     buttonsEl.appendChild(btn);
@@ -328,14 +359,13 @@ closeSettings.addEventListener("click", () => {
 });
 
 addButton.addEventListener("click", () => {
-  const label = newLabel.value.trim();
+  const label = newLabel.value.trim().slice(0, LABEL_LIMIT);
   if (!label) return;
   const color = newColor.value;
   const icon = newIcon.value.trim();
   settings.buttons.push({ label, color, icon });
   newLabel.value = "";
-  newIcon.value = "";
-  newColor.value = "#ffcc66";
+  setNextDefaults();
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
   renderButtons();

@@ -3,8 +3,8 @@ const LS_SETTINGS = "habitSettings";
 const LS_LOG = "habitLog";
 
 const defaultSettings = {
-  buttons: [{ label: "Decision" }], // por defecto 1
-  showStatsHUD: false,
+  buttons: [{ label: "Decision", color: "#ffcc66" }], // por defecto 1
+  showButtonCounts: false,
   stage: 1,
   stageProgress: 0,
 };
@@ -32,16 +32,18 @@ const btnSettings = document.getElementById("btn-settings");
 const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
 const newLabel = document.getElementById("new-label");
+const newColor = document.getElementById("new-color");
 const buttonList = document.getElementById("button-list");
-const toggleStats = document.getElementById("toggle-stats");
+const toggleCounts = document.getElementById("toggle-counts");
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
+
+let dragIndex = null;
 
 // Init
 renderStage();
 renderButtons();
 renderSettings();
-updateHUDStatsVisibility();
 updateStats();
 
 // Registrar SW
@@ -55,6 +57,8 @@ function handleAction(label) {
   logs.push({ decisionLabel: label, timestamp: now });
   saveJSON(LS_LOG, logs);
 
+  playTapSound();
+
   // Progreso de etapa
   settings.stageProgress += 1;
   const canAdvance =
@@ -67,22 +71,30 @@ function handleAction(label) {
     saveJSON(LS_SETTINGS, settings);
     renderStage();
     playStageSound();
-  } else {
-    playTapSound();
   }
 
-  playCompleteSound();
-
   updateStats();
+  if (settings.showButtonCounts) renderButtons();
 }
 
 function renderButtons() {
   buttonsEl.innerHTML = "";
+  const counts = logs.reduce((acc, l) => {
+    acc[l.decisionLabel] = (acc[l.decisionLabel] || 0) + 1;
+    return acc;
+  }, {});
   settings.buttons.forEach((b) => {
     const btn = document.createElement("button");
     btn.className = "action";
     btn.textContent = b.label;
+    btn.style.background = b.color || "#ffcc66";
     btn.addEventListener("click", () => handleAction(b.label));
+    if (settings.showButtonCounts) {
+      btn.dataset.showCount = "true";
+      btn.dataset.count = String(counts[b.label] || 0);
+    } else {
+      btn.dataset.showCount = "false";
+    }
     buttonsEl.appendChild(btn);
   });
   applyBottomArc(buttonsEl);
@@ -175,22 +187,27 @@ btnSettings.addEventListener("click", () => {
 closeSettings.addEventListener("click", () => {
   settingsSheet.hidden = true;
   renderButtons();
-  updateHUDStatsVisibility();
 });
 
 addButton.addEventListener("click", () => {
   const label = newLabel.value.trim();
   if (!label) return;
-  settings.buttons.push({ label });
+  const color = newColor.value;
+  settings.buttons.push({ label, color });
   newLabel.value = "";
+  newColor.value = "#ffcc66";
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
+  renderButtons();
 });
 
-toggleStats.addEventListener("change", () => {
-  settings.showStatsHUD = toggleStats.checked;
+toggleCounts.addEventListener("click", () => {
+  settings.showButtonCounts = !settings.showButtonCounts;
   saveJSON(LS_SETTINGS, settings);
-  updateHUDStatsVisibility();
+  toggleCounts.textContent = settings.showButtonCounts
+    ? "Ocultar contadores"
+    : "Mostrar contadores";
+  renderButtons();
 });
 
 resetApp.addEventListener("click", () => {
@@ -201,18 +218,35 @@ resetApp.addEventListener("click", () => {
   location.reload();
 });
 
-function updateHUDStatsVisibility() {
-  hudStatsBtn.style.display = settings.showStatsHUD ? "inline-flex" : "none";
-  if (!settings.showStatsHUD) statsSheet.hidden = true;
-}
-
 function renderSettings() {
-  // Rehidratar ajustes
-  toggleStats.checked = !!settings.showStatsHUD;
+  toggleCounts.textContent = settings.showButtonCounts
+    ? "Ocultar contadores"
+    : "Mostrar contadores";
 
   buttonList.innerHTML = "";
   settings.buttons.forEach((b, idx) => {
     const li = document.createElement("li");
+    li.dataset.index = String(idx);
+
+    const handle = document.createElement("span");
+    handle.textContent = "☰";
+    handle.className = "drag-handle";
+    handle.draggable = true;
+    handle.addEventListener("dragstart", () => {
+      dragIndex = idx;
+    });
+
+    li.addEventListener("dragover", (e) => {
+      e.preventDefault();
+    });
+    li.addEventListener("drop", () => {
+      const to = Number(li.dataset.index);
+      if (dragIndex === null || dragIndex === to) return;
+      move(settings.buttons, dragIndex, to);
+      saveJSON(LS_SETTINGS, settings);
+      renderSettings();
+      renderButtons();
+    });
 
     const input = document.createElement("input");
     input.type = "text";
@@ -220,24 +254,16 @@ function renderSettings() {
     input.addEventListener("input", () => {
       settings.buttons[idx].label = input.value;
       saveJSON(LS_SETTINGS, settings);
+      renderButtons();
     });
 
-    const up = document.createElement("button");
-    up.textContent = "↑";
-    up.addEventListener("click", () => {
-      if (idx === 0) return;
-      move(settings.buttons, idx, idx - 1);
+    const color = document.createElement("input");
+    color.type = "color";
+    color.value = b.color || "#ffcc66";
+    color.addEventListener("input", () => {
+      settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);
-      renderSettings();
-    });
-
-    const down = document.createElement("button");
-    down.textContent = "↓";
-    down.addEventListener("click", () => {
-      if (idx === settings.buttons.length - 1) return;
-      move(settings.buttons, idx, idx + 1);
-      saveJSON(LS_SETTINGS, settings);
-      renderSettings();
+      renderButtons();
     });
 
     const del = document.createElement("button");
@@ -246,9 +272,10 @@ function renderSettings() {
       settings.buttons.splice(idx, 1);
       saveJSON(LS_SETTINGS, settings);
       renderSettings();
+      renderButtons();
     });
 
-    li.append(input, up, down, del);
+    li.append(handle, input, color, del);
     buttonList.appendChild(li);
   });
 

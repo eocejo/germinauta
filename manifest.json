@@ -1,6 +1,6 @@
 {
-  "name": "Habit Reinforcer",
-  "short_name": "HabitApp",
+  "name": "Germinauta",
+  "short_name": "Germinauta",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#dff4ff",

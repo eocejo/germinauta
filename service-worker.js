@@ -13,8 +13,9 @@ const ASSETS = [
   "./assets/images/stage4.png",
   "./assets/images/stage5.png",
   "./assets/images/stage6.png",
-  "./assets/sounds/tap.mp3",
-  "./assets/sounds/stage-change.mp3"
+  "./assets/tap.wav",
+  "./assets/stage-change.wav",
+  "./assets/action-complete.wav"
 ];
 
 self.addEventListener("install", (e) => {

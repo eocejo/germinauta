@@ -26,6 +26,7 @@ const statMonth = document.getElementById("stat-month");
 const statTotal = document.getElementById("stat-total");
 const sfxTap = document.getElementById("sfx-tap");
 const sfxStage = document.getElementById("sfx-stage");
+const sfxComplete = document.getElementById("sfx-complete");
 const btnSettings = document.getElementById("btn-settings");
 const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
@@ -66,6 +67,8 @@ function handleAction(label) {
     playTapSound();
   }
 
+  playCompleteSound();
+
   updateStats();
 }
 
@@ -92,6 +95,9 @@ function playTapSound() {
 }
 function playStageSound() {
   safePlay(sfxStage);
+}
+function playCompleteSound() {
+  safePlay(sfxComplete);
 }
 function safePlay(audioEl) {
   try {

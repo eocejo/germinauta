@@ -6,10 +6,10 @@ const defaultSettings = {
   buttons: [{ label: "Decision" }], // por defecto 1
   showStatsHUD: false,
   stage: 1,
-  stageProgress: 0
+  stageProgress: 0,
 };
 
-const thresholds = [8, 20, 80, 150, 300]; // 1→2, 2→3, 3→4, 4→5, 5→6
+const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
 let settings = loadJSON(LS_SETTINGS, defaultSettings);
 let logs = loadJSON(LS_LOG, []);
@@ -55,7 +55,9 @@ function handleAction(label) {
 
   // Progreso de etapa
   settings.stageProgress += 1;
-  const canAdvance = settings.stage < 6 && settings.stageProgress >= thresholds[settings.stage - 1];
+  const canAdvance =
+    settings.stage < 6 &&
+    settings.stageProgress >= thresholds[settings.stage - 1];
 
   if (canAdvance) {
     settings.stage += 1;
@@ -120,7 +122,11 @@ function updateStats() {
     const d = new Date(item.timestamp);
     if (isSameDay(d, now)) today++;
     if (isSameISOWeek(d, now)) week++;
-    if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) month++;
+    if (
+      d.getMonth() === now.getMonth() &&
+      d.getFullYear() === now.getFullYear()
+    )
+      month++;
   }
 
   statToday.textContent = String(today);
@@ -130,7 +136,11 @@ function updateStats() {
 }
 
 function isSameDay(a, b) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
 }
 
 function isSameISOWeek(a, b) {
@@ -258,7 +268,9 @@ function applyDownwardArc(container) {
   const mid = (n - 1) / 2;
   const amplitude = 10; // px extra hacia arriba en extremos
   items.forEach((el, i) => {
-    const offset = -Math.pow(i - mid, 2) * (amplitude / (mid === 0 ? 1 : mid * mid)) + amplitude;
+    const offset =
+      -Math.pow(i - mid, 2) * (amplitude / (mid === 0 ? 1 : mid * mid)) +
+      amplitude;
     // Queremos el centro más bajo. Desplazamos Y positiva hacia abajo.
     const down = amplitude - offset; // centro más grande
     el.style.transform = `translateY(${down.toFixed(1)}px)`;

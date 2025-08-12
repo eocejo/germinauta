@@ -152,9 +152,19 @@ renderButtons();
 renderSettings();
 updateStats();
 if (introVideo) {
-  setTimeout(() => {
-    introVideo.remove();
-  }, 3000);
+  const removeVideo = () => {
+    introVideo.classList.add("fade-out");
+    setTimeout(() => introVideo.remove(), 500);
+  };
+  introVideo.addEventListener("timeupdate", () => {
+    if (
+      introVideo.duration - introVideo.currentTime <= 0.5 &&
+      !introVideo.classList.contains("fade-out")
+    ) {
+      removeVideo();
+    }
+  });
+  introVideo.addEventListener("ended", removeVideo);
 }
 
 if (!loadJSON(LS_ONBOARD, false)) {

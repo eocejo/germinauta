@@ -32,6 +32,11 @@ body {
   height: 100%;
   object-fit: cover;
   z-index: 10;
+  transition: opacity 0.5s ease;
+}
+
+#intro-video.fade-out {
+  opacity: 0;
 }
 
 #app {

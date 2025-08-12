@@ -37,14 +37,23 @@ const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
+const introVideo = document.getElementById("intro-video");
 
 let dragIndex = null;
+document.addEventListener("pointerup", () => {
+  dragIndex = null;
+});
 
 // Init
 renderStage();
 renderButtons();
 renderSettings();
 updateStats();
+if (introVideo) {
+  setTimeout(() => {
+    introVideo.remove();
+  }, 3000);
+}
 
 // Registrar SW
 if ("serviceWorker" in navigator) {
@@ -86,15 +95,12 @@ function renderButtons() {
   settings.buttons.forEach((b) => {
     const btn = document.createElement("button");
     btn.className = "action";
-    btn.textContent = b.label;
+    const count = counts[b.label] || 0;
+    btn.textContent = settings.showButtonCounts
+      ? `${b.label} ${count}`
+      : b.label;
     btn.style.background = b.color || "#ffcc66";
     btn.addEventListener("click", () => handleAction(b.label));
-    if (settings.showButtonCounts) {
-      btn.dataset.showCount = "true";
-      btn.dataset.count = String(counts[b.label] || 0);
-    } else {
-      btn.dataset.showCount = "false";
-    }
     buttonsEl.appendChild(btn);
   });
   applyBottomArc(buttonsEl);
@@ -231,18 +237,14 @@ function renderSettings() {
     const handle = document.createElement("span");
     handle.textContent = "☰";
     handle.className = "drag-handle";
-    handle.draggable = true;
-    handle.addEventListener("dragstart", () => {
+    handle.addEventListener("pointerdown", () => {
       dragIndex = idx;
     });
-
-    li.addEventListener("dragover", (e) => {
-      e.preventDefault();
-    });
-    li.addEventListener("drop", () => {
+    li.addEventListener("pointerenter", () => {
       const to = Number(li.dataset.index);
       if (dragIndex === null || dragIndex === to) return;
       move(settings.buttons, dragIndex, to);
+      dragIndex = to;
       saveJSON(LS_SETTINGS, settings);
       renderSettings();
       renderButtons();

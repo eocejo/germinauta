@@ -19,6 +19,7 @@ const translations = {
     confirmReset: "Reset the app? This will erase all data.",
     confirmRefresh: "Clear the app cache? This will remove cached files.",
     showStats: "Show stats",
+    stats: "Stats",
     defaultButton: "Decision",
   },
   es: {
@@ -41,6 +42,7 @@ const translations = {
     confirmReset: "¿Renacer la app? Se borrarán todos los datos.",
     confirmRefresh: "¿Borrar la cache? Se borrará la caché de la página.",
     showStats: "Mostrar estadísticas",
+    stats: "Estadísticas",
     defaultButton: "Decisión",
   },
 };
@@ -88,6 +90,7 @@ const statWeek = document.getElementById("stat-week");
 const statMonth = document.getElementById("stat-month");
 const statTotal = document.getElementById("stat-total");
 const closeStats = document.getElementById("close-stats");
+const statsHeading = document.getElementById("stats-heading");
 const sfxTap = document.getElementById("sfx-tap");
 const sfxStage = document.getElementById("sfx-stage");
 const sfxComplete = document.getElementById("sfx-complete");
@@ -140,6 +143,7 @@ resetApp.textContent = t("reset");
 refreshApp.textContent = t("refresh");
 closeSettings.textContent = t("close");
 closeOnboarding.textContent = t("close");
+statsHeading.textContent = t("stats");
 lblToday.textContent = `${t("today")}:`;
 lblWeek.textContent = `${t("week")}:`;
 lblMonth.textContent = `${t("month")}:`;
@@ -165,7 +169,7 @@ if (introVideo) {
       () => {
         introVideo.remove();
       },
-      { once: true }
+      { once: true },
     );
   });
 }

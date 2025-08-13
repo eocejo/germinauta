@@ -75,7 +75,7 @@ body {
   position: relative;
   height: 100%;
   overflow: hidden;
-  background: url("background.png") center / cover no-repeat;
+  background: url("assets/images/background.png") center / cover no-repeat;
 }
 
 #environment {
@@ -171,13 +171,23 @@ body {
 }
 
 #stats .panel {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-#stats .panel .row {
-  grid-column: 1 / -1;
+#stats .stat-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+#stats .stat-row span:first-child {
+  font-weight: 600;
+}
+
+#stats canvas {
+  width: 100%;
+  height: auto;
 }
 
 .row {

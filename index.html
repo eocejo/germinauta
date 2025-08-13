@@ -49,17 +49,21 @@
       <section id="stats" hidden>
         <div class="panel">
           <button id="close-stats" class="close" aria-label="Cerrar">✕</button>
-          <div>
-            <strong id="lbl-today">Hoy:</strong> <span id="stat-today">0</span>
+          <h2 id="stats-heading"></h2>
+          <div class="stat-row">
+            <span id="lbl-today">Hoy:</span>
+            <span id="stat-today">0</span>
           </div>
-          <div>
-            <strong id="lbl-week">Semana:</strong> <span id="stat-week">0</span>
+          <div class="stat-row">
+            <span id="lbl-week">Semana:</span>
+            <span id="stat-week">0</span>
           </div>
-          <div>
-            <strong id="lbl-month">Mes:</strong> <span id="stat-month">0</span>
+          <div class="stat-row">
+            <span id="lbl-month">Mes:</span>
+            <span id="stat-month">0</span>
           </div>
-          <div>
-            <strong id="lbl-total">Total:</strong>
+          <div class="stat-row">
+            <span id="lbl-total">Total:</span>
             <span id="stat-total">0</span>
           </div>
           <canvas id="chart-week" width="300" height="150"></canvas>

@@ -57,7 +57,7 @@ const LS_ONBOARD = "habitOnboard";
 const storageAvailable = isStorageAvailable();
 
 const defaultSettings = {
-  buttons: [{ label: t("defaultButton"), color: "#ffcc66", icon: "" }],
+  buttons: [{ label: t("defaultButton"), color: "#ffcc66" }],
   showButtonCounts: false,
   stage: 1,
   stageProgress: 0,
@@ -72,7 +72,6 @@ const defaultColors = [
   "#cc66ff",
   "#ff9966",
 ];
-const defaultEmojis = ["😀", "💪", "📚", "🍎", "🧘", "🚰"];
 
 let settings = loadJSON(LS_SETTINGS, defaultSettings);
 let logs = loadJSON(LS_LOG, []);
@@ -97,7 +96,6 @@ const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
 const newLabel = document.getElementById("new-label");
 newLabel.maxLength = LABEL_LIMIT;
-const newIcon = document.getElementById("new-icon");
 const newColor = document.getElementById("new-color");
 const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
@@ -121,20 +119,9 @@ const chartCanvas = document.getElementById("chart-week");
 let nextDefault = settings.buttons.length;
 function setNextDefaults() {
   newColor.value = defaultColors[nextDefault % defaultColors.length];
-  newIcon.value = defaultEmojis[nextDefault % defaultEmojis.length];
   nextDefault += 1;
 }
 setNextDefaults();
-
-newIcon.addEventListener("click", () => {
-  if (newIcon.showPicker) {
-    newIcon.showPicker();
-  }
-});
-
-newIcon.addEventListener("input", () => {
-  newIcon.value = [...newIcon.value][0] || "";
-});
 
 let dragIndex = null;
 document.addEventListener("pointerup", () => {
@@ -171,13 +158,15 @@ updateStats();
 if (introVideo) {
   introVideo.removeAttribute("controls");
   introVideo.play().catch(() => {});
-  introVideo.addEventListener("timeupdate", () => {
-    if (introVideo.duration - introVideo.currentTime <= 0.3) {
-      introVideo.classList.add("fade-out");
-    }
-  });
   introVideo.addEventListener("ended", () => {
-    introVideo.remove();
+    introVideo.classList.add("fade-out");
+    introVideo.addEventListener(
+      "transitionend",
+      () => {
+        introVideo.remove();
+      },
+      { once: true }
+    );
   });
 }
 
@@ -237,7 +226,7 @@ function renderButtons() {
 
     const labelSpan = document.createElement("span");
     labelSpan.className = "label";
-    labelSpan.textContent = `${b.icon ? b.icon + " " : ""}${b.label}`;
+    labelSpan.textContent = b.label;
     btn.appendChild(labelSpan);
 
     if (settings.showButtonCounts) {
@@ -377,8 +366,7 @@ addButton.addEventListener("click", () => {
   const label = newLabel.value.trim().slice(0, LABEL_LIMIT);
   if (!label) return;
   const color = newColor.value;
-  const icon = [...newIcon.value.trim()][0] || "";
-  settings.buttons.push({ label, color, icon });
+  settings.buttons.push({ label, color });
   newLabel.value = "";
   setNextDefaults();
   saveJSON(LS_SETTINGS, settings);
@@ -456,16 +444,6 @@ function renderSettings() {
       renderButtons();
     });
 
-    const icon = document.createElement("input");
-    icon.type = "text";
-    icon.value = b.icon || "";
-    icon.addEventListener("input", () => {
-      settings.buttons[idx].icon = icon.value;
-      saveJSON(LS_SETTINGS, settings);
-      renderButtons();
-      updatePreview();
-    });
-
     const color = document.createElement("input");
     color.type = "color";
     color.value = b.color || "#ffcc66";
@@ -473,23 +451,7 @@ function renderSettings() {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);
       renderButtons();
-      updatePreview();
     });
-
-    const preview = document.createElement("button");
-    preview.className = "action";
-    preview.type = "button";
-    preview.disabled = true;
-    const updatePreview = () => {
-      preview.textContent = `${icon.value ? icon.value + " " : ""}${
-        input.value
-      }`;
-      preview.style.background = color.value;
-    };
-    updatePreview();
-    input.addEventListener("input", updatePreview);
-    icon.addEventListener("input", updatePreview);
-    color.addEventListener("input", updatePreview);
 
     const del = document.createElement("button");
     del.textContent = "✕";
@@ -500,7 +462,7 @@ function renderSettings() {
       renderButtons();
     });
 
-    li.append(handle, input, icon, color, preview, del);
+    li.append(handle, input, color, del);
     buttonList.appendChild(li);
   });
 

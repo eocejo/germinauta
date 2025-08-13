@@ -109,7 +109,7 @@ body {
   bottom: calc(18px + 40px);
   transform: translateX(-50%);
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
   align-items: flex-end;
   gap: 12px;

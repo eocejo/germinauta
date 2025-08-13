@@ -130,6 +130,19 @@ let dragIndex = null;
 document.addEventListener("pointerup", () => {
   dragIndex = null;
 });
+document.addEventListener("pointermove", (e) => {
+  if (dragIndex === null) return;
+  const target = document.elementFromPoint(e.clientX, e.clientY);
+  const li = target && target.closest("#button-list li");
+  if (!li) return;
+  const to = Number(li.dataset.index);
+  if (to === dragIndex) return;
+  move(settings.buttons, dragIndex, to);
+  dragIndex = to;
+  saveJSON(LS_SETTINGS, settings);
+  renderSettings();
+  renderButtons();
+});
 
 // Traducción inicial
 hudStatsBtn.setAttribute("aria-label", t("showStats"));
@@ -426,17 +439,9 @@ function renderSettings() {
     const handle = document.createElement("span");
     handle.textContent = "☰";
     handle.className = "drag-handle";
-    handle.addEventListener("pointerdown", () => {
+    handle.addEventListener("pointerdown", (e) => {
       dragIndex = idx;
-    });
-    li.addEventListener("pointerenter", () => {
-      const to = Number(li.dataset.index);
-      if (dragIndex === null || dragIndex === to) return;
-      move(settings.buttons, dragIndex, to);
-      dragIndex = to;
-      saveJSON(LS_SETTINGS, settings);
-      renderSettings();
-      renderButtons();
+      e.preventDefault();
     });
 
     const input = document.createElement("input");
@@ -466,7 +471,7 @@ function renderSettings() {
       renderButtons();
     });
 
-    li.append(handle, input, color, del);
+    li.append(handle, input, del, color);
     buttonList.appendChild(li);
   });
 
@@ -499,9 +504,9 @@ function applyBottomArc(container) {
   const n = items.length;
   if (n === 0) return;
   const radius = 40;
-  const step = Math.PI / (n - 1);
+  const step = Math.PI / (n + 1);
   items.forEach((el, i) => {
-    const angle = step * i;
+    const angle = step * (i + 1);
     const y = Math.sin(angle) * radius;
     el.style.setProperty("--arc-y", `${y.toFixed(1)}px`);
   });

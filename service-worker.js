@@ -1,4 +1,4 @@
-const CACHE = "habit-reinforcer-v3";
+const CACHE = "habit-reinforcer-v4";
 const ASSETS = [
   "./",
   "./index.html",

@@ -20,7 +20,7 @@ const translations = {
     stats: "Stats",
     days: "Days",
     entries: "Entries",
-    defaultButton: "Decision",
+    defaultButton: "🧭",
   },
   es: {
     settings: "Configuración",
@@ -43,13 +43,17 @@ const translations = {
     stats: "Estadísticas",
     days: "Días",
     entries: "Registros",
-    defaultButton: "Decisión",
+    defaultButton: "🧭",
   },
 };
 
 const lang = navigator.language.startsWith("es") ? "es" : "en";
 document.documentElement.lang = lang;
 const t = (k) => translations[lang][k];
+
+if (screen.orientation && screen.orientation.lock) {
+  screen.orientation.lock("portrait").catch(() => {});
+}
 
 // Config persistente
 const LS_SETTINGS = "habitSettings";
@@ -59,7 +63,7 @@ const storageAvailable = isStorageAvailable();
 
 const defaultSettings = {
   buttons: [{ label: t("defaultButton"), color: "#ffcc66" }],
-  showButtonCounts: false,
+  showButtonCounts: true,
   stage: 1,
   stageProgress: 0,
 };
@@ -90,9 +94,6 @@ const statMonth = document.getElementById("stat-month");
 const statTotal = document.getElementById("stat-total");
 const closeStats = document.getElementById("close-stats");
 const statsHeading = document.getElementById("stats-heading");
-const sfxTap = document.getElementById("sfx-tap");
-const sfxStage = document.getElementById("sfx-stage");
-const sfxComplete = document.getElementById("sfx-complete");
 const btnSettings = document.getElementById("btn-settings");
 const settingsSheet = document.getElementById("settings");
 const addButton = document.getElementById("add-button");
@@ -114,6 +115,36 @@ const settingsHabits = document.getElementById("settings-habits");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
 const chartCanvas = document.getElementById("chart-week");
+
+const audioCtx = window.AudioContext ? new AudioContext() : null;
+const audioBuffers = {};
+const soundFiles = {
+  tap: "assets/sounds/tap.wav",
+  stage: "assets/sounds/stage-change.wav",
+  complete: "assets/sounds/action-complete.wav",
+};
+
+async function loadSound(name, url) {
+  if (!audioCtx) return;
+  const res = await fetch(url);
+  const buf = await res.arrayBuffer();
+  audioBuffers[name] = await audioCtx.decodeAudioData(buf);
+}
+
+function playSound(name) {
+  if (!audioCtx) return;
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  const buffer = audioBuffers[name];
+  if (!buffer) return;
+  const src = audioCtx.createBufferSource();
+  src.buffer = buffer;
+  src.connect(audioCtx.destination);
+  src.start();
+}
+
+for (const [name, url] of Object.entries(soundFiles)) {
+  loadSound(name, url);
+}
 
 let nextDefault = settings.buttons.length;
 function setNextDefaults() {
@@ -252,21 +283,13 @@ function renderStage() {
 }
 
 function playTapSound() {
-  safePlay(sfxTap);
+  playSound("tap");
 }
 function playStageSound() {
-  safePlay(sfxStage);
+  playSound("stage");
 }
 function playCompleteSound() {
-  safePlay(sfxComplete);
-}
-function safePlay(audioEl) {
-  try {
-    audioEl.currentTime = 0;
-    audioEl.play();
-  } catch (_) {
-    /* ignored */
-  }
+  playSound("complete");
 }
 
 // Estadísticas

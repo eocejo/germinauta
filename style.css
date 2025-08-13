@@ -126,6 +126,7 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 4px;
   border-radius: 50%;
   border: 0;
   background: var(--btn);
@@ -146,7 +147,11 @@ body {
 }
 
 #buttons .action .label {
+  width: 100%;
+  display: block;
   text-align: center;
+  white-space: normal;
+  word-break: break-word;
 }
 
 #buttons .action .count {

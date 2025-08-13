@@ -224,7 +224,7 @@ function renderButtons() {
   }, {});
   settings.buttons.forEach((b) => {
     const btn = document.createElement("button");
-    btn.className = "action btn btn-primary";
+    btn.className = "action";
     const count = counts[b.label] || 0;
 
     const labelSpan = document.createElement("span");
@@ -240,7 +240,6 @@ function renderButtons() {
     }
 
     btn.style.background = b.color || "#ffcc66";
-    btn.style.border = "0";
     btn.addEventListener("click", () => handleAction(b.label));
     buttonsEl.appendChild(btn);
   });
@@ -450,7 +449,6 @@ function renderSettings() {
   settings.buttons.forEach((b, idx) => {
     const li = document.createElement("li");
     li.dataset.index = String(idx);
-    li.className = "list-group-item";
 
     const handle = document.createElement("span");
     handle.textContent = "☰";
@@ -463,7 +461,6 @@ function renderSettings() {
     const input = document.createElement("input");
     input.type = "text";
     input.value = b.label;
-    input.className = "form-control";
     input.addEventListener("input", () => {
       settings.buttons[idx].label = input.value;
       saveJSON(LS_SETTINGS, settings);
@@ -473,7 +470,6 @@ function renderSettings() {
     const color = document.createElement("input");
     color.type = "color";
     color.value = b.color || "#ffcc66";
-    color.className = "form-control form-control-color";
     color.addEventListener("input", () => {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);
@@ -482,7 +478,6 @@ function renderSettings() {
 
     const del = document.createElement("button");
     del.textContent = "✕";
-    del.className = "btn btn-danger btn-sm";
     del.addEventListener("click", () => {
       settings.buttons.splice(idx, 1);
       saveJSON(LS_SETTINGS, settings);

@@ -8,6 +8,7 @@ const ASSETS = [
   "./manifest.json",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
+  "./assets/images/background.png",
   "./assets/images/stage1.png",
   "./assets/images/stage2.png",
   "./assets/images/stage3.png",

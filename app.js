@@ -13,13 +13,13 @@ const translations = {
     week: "Week",
     month: "Month",
     total: "Total",
-    onboarding:
-      "Tap buttons to grow your creature and keep track of your habits.",
     storageError: "Storage unavailable. Progress won't be saved.",
     confirmReset: "Reset the app? This will erase all data.",
     confirmRefresh: "Clear the app cache? This will remove cached files.",
     showStats: "Show stats",
     stats: "Stats",
+    days: "Days",
+    entries: "Entries",
     defaultButton: "Decision",
   },
   es: {
@@ -36,13 +36,13 @@ const translations = {
     week: "Semana",
     month: "Mes",
     total: "Total",
-    onboarding:
-      "Presiona los botones para hacer crecer tu criatura y seguir tus hábitos.",
     storageError: "Almacenamiento no disponible. El progreso no se guardará.",
     confirmReset: "¿Renacer la app? Se borrarán todos los datos.",
     confirmRefresh: "¿Borrar la cache? Se borrará la caché de la página.",
     showStats: "Mostrar estadísticas",
     stats: "Estadísticas",
+    days: "Días",
+    entries: "Registros",
     defaultButton: "Decisión",
   },
 };
@@ -54,7 +54,6 @@ const t = (k) => translations[lang][k];
 // Config persistente
 const LS_SETTINGS = "habitSettings";
 const LS_LOG = "habitLog";
-const LS_ONBOARD = "habitOnboard";
 
 const storageAvailable = isStorageAvailable();
 
@@ -112,9 +111,6 @@ const lblMonth = document.getElementById("lbl-month");
 const lblTotal = document.getElementById("lbl-total");
 const settingsTitle = document.getElementById("settings-title");
 const settingsHabits = document.getElementById("settings-habits");
-const onboardingSheet = document.getElementById("onboarding");
-const onboardingText = document.getElementById("onboarding-text");
-const closeOnboarding = document.getElementById("close-onboarding");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
 const chartCanvas = document.getElementById("chart-week");
@@ -155,7 +151,6 @@ addButton.textContent = t("add");
 resetApp.textContent = t("reset");
 refreshApp.textContent = t("refresh");
 closeSettings.textContent = t("close");
-closeOnboarding.textContent = t("close");
 statsHeading.textContent = t("stats");
 lblToday.textContent = `${t("today")}:`;
 lblWeek.textContent = `${t("week")}:`;
@@ -164,7 +159,6 @@ lblTotal.textContent = `${t("total")}:`;
 toggleCounts.textContent = settings.showButtonCounts
   ? t("hideCounts")
   : t("showCounts");
-onboardingText.textContent = t("onboarding");
 storageErrorText.textContent = t("storageError");
 
 // Init
@@ -184,14 +178,6 @@ if (introVideo) {
       },
       { once: true },
     );
-  });
-}
-
-if (!loadJSON(LS_ONBOARD, false)) {
-  onboardingSheet.hidden = false;
-  closeOnboarding.addEventListener("click", () => {
-    onboardingSheet.hidden = true;
-    saveJSON(LS_ONBOARD, true);
   });
 }
 
@@ -351,13 +337,41 @@ function drawChart() {
   const data = getLast7DaysCounts();
   const w = chartCanvas.width;
   const h = chartCanvas.height;
+  const marginLeft = 30;
+  const marginBottom = 30;
+  const originY = h - marginBottom;
   ctx.clearRect(0, 0, w, h);
   const max = Math.max(...data, 1);
-  const barWidth = w / data.length;
+  const barWidth = (w - marginLeft - 10) / data.length;
+  ctx.strokeStyle = "#000000";
+  ctx.beginPath();
+  ctx.moveTo(marginLeft, 10);
+  ctx.lineTo(marginLeft, originY);
+  ctx.lineTo(w - 10, originY);
+  ctx.stroke();
+  ctx.fillStyle = "#000000";
+  ctx.font = "12px sans-serif";
+  ctx.textAlign = "right";
+  ctx.fillText("0", marginLeft - 5, originY);
+  ctx.fillText(String(max), marginLeft - 5, 15);
+  ctx.textAlign = "center";
+  ctx.fillText(t("days"), (w + marginLeft) / 2, h - 5);
+  ctx.save();
+  ctx.translate(15, h / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(t("entries"), 0, 0);
+  ctx.restore();
+  const today = new Date();
   data.forEach((val, i) => {
-    const barHeight = (val / max) * (h - 20);
+    const barHeight = (val / max) * (originY - 10);
+    const x = marginLeft + i * barWidth;
     ctx.fillStyle = "#66ccff";
-    ctx.fillRect(i * barWidth + 4, h - barHeight - 10, barWidth - 8, barHeight);
+    ctx.fillRect(x + 4, originY - barHeight, barWidth - 8, barHeight);
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    const label = d.toLocaleDateString(lang, { weekday: "short" });
+    ctx.fillStyle = "#000000";
+    ctx.fillText(label, x + barWidth / 2, h - marginBottom + 15);
   });
 }
 

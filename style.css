@@ -163,7 +163,6 @@ body {
 /* Paneles superpuestos */
 #stats,
 #settings,
-#onboarding,
 #storage-error {
   position: absolute;
   inset: 0;

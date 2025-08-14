@@ -171,7 +171,8 @@ body {
 /* Paneles superpuestos */
 #stats,
 #settings,
-#storage-error {
+#storage-error,
+#note-sheet {
   position: absolute;
   inset: 0;
   display: grid;
@@ -279,6 +280,18 @@ body {
   position: absolute;
   top: 8px;
   right: 8px;
+}
+
+#note-sheet #close-note {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+#note-text {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
 }
 
 @keyframes float {

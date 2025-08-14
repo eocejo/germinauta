@@ -219,9 +219,15 @@ body {
   gap: 8px;
   align-items: center;
   margin-top: 10px;
+  flex-wrap: wrap;
 }
 .row.end {
   justify-content: flex-end;
+}
+
+.row input[type="text"] {
+  flex: 1;
+  min-width: 0;
 }
 
 #button-list {
@@ -231,7 +237,7 @@ body {
 }
 #button-list li {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr 44px auto;
   gap: 8px;
   align-items: center;
   padding: 6px 0;
@@ -247,6 +253,8 @@ body {
 .panel input[type="color"] {
   width: 44px;
   height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   border: 0;
   flex-shrink: 0;

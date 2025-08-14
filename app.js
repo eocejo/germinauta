@@ -255,6 +255,7 @@ function handleAction(label) {
     saveJSON(LS_SETTINGS, settings);
     renderStage();
     playStageSound();
+    playStageParticles();
   }
 
   updateStats();
@@ -301,6 +302,9 @@ function playTapSound() {
 }
 function playStageSound() {
   playSound("stage");
+}
+function playStageParticles() {
+  confetti({ spread: 70, origin: { y: 0.6 } });
 }
 function playCompleteSound() {
   playSound("complete");

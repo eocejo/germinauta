@@ -236,6 +236,8 @@ body {
 .drag-handle {
   cursor: grab;
   user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
 }
 
 .panel input[type="color"] {

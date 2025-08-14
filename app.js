@@ -95,7 +95,7 @@ let notes = loadJSON(LS_NOTES, {});
 const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
 // Elementos
-const creatureEl = document.getElementById("creature");
+let creatureEl = document.getElementById("creature");
 const envEl = document.getElementById("environment");
 const buttonsEl = document.getElementById("buttons");
 const hudStatsBtn = document.getElementById("btn-stats");
@@ -328,7 +328,32 @@ function renderButtons() {
 
 function renderStage() {
   const s = settings.stage;
-  creatureEl.src = `assets/images/stage${s}.png`;
+  if (s === 1) {
+    if (creatureEl.tagName !== "VIDEO") {
+      const video = document.createElement("video");
+      video.id = "creature";
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+      video.playsInline = true;
+      video.src = "assets/videos/stage1.mp4";
+      creatureEl.replaceWith(video);
+      creatureEl = video;
+    } else {
+      creatureEl.src = "assets/videos/stage1.mp4";
+    }
+  } else {
+    if (creatureEl.tagName !== "IMG") {
+      const img = document.createElement("img");
+      img.id = "creature";
+      img.alt = "Criatura";
+      img.src = `assets/images/stage${s}.png`;
+      creatureEl.replaceWith(img);
+      creatureEl = img;
+    } else {
+      creatureEl.src = `assets/images/stage${s}.png`;
+    }
+  }
 }
 
 function playTapSound() {

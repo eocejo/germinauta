@@ -9,7 +9,7 @@ const ASSETS = [
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
   "./assets/images/background.png",
-  "./assets/images/stage1.png",
+  "./assets/videos/stage1.mp4",
   "./assets/images/stage2.png",
   "./assets/images/stage3.png",
   "./assets/images/stage4.png",

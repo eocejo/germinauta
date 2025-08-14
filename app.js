@@ -343,6 +343,7 @@ function renderStage() {
     } else {
       creatureEl.src = "assets/videos/stage1.mp4";
     }
+    creatureEl.play().catch(() => {});
   } else {
     if (creatureEl.tagName !== "IMG") {
       const img = document.createElement("img");

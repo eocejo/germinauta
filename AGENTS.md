@@ -20,5 +20,6 @@ This repository contains a small static web app written in plain JavaScript, HTM
 
 ## Miscellaneous
 
+- The intro video (`#intro-video` in `index.html`) must always autoplay. Keep its `autoplay` attribute so it starts automatically, and avoid changes that interfere with the automatic playback.
 - This file's instructions apply to the entire repository.
 - Leave the working tree clean before finishing.

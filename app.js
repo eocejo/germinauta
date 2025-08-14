@@ -18,7 +18,7 @@ const translations = {
     confirmRefresh: "Clear the app cache? This will remove cached files.",
     showStats: "Show stats",
     stats: "Stats",
-    days: "Days",
+    weeks: "Weeks",
     entries: "Entries",
     defaultButton: "🧭",
   },
@@ -41,7 +41,7 @@ const translations = {
     confirmRefresh: "¿Borrar la cache? Se borrará la caché de la página.",
     showStats: "Mostrar estadísticas",
     stats: "Estadísticas",
-    days: "Días",
+    weeks: "Semanas",
     entries: "Registros",
     defaultButton: "🧭",
   },
@@ -159,6 +159,7 @@ document.addEventListener("pointerup", () => {
 });
 document.addEventListener("pointermove", (e) => {
   if (dragIndex === null) return;
+  e.preventDefault();
   const target = document.elementFromPoint(e.clientX, e.clientY);
   const li = target && target.closest("#button-list li");
   if (!li) return;
@@ -169,6 +170,9 @@ document.addEventListener("pointermove", (e) => {
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
   renderButtons();
+});
+document.addEventListener("selectstart", (e) => {
+  if (dragIndex !== null) e.preventDefault();
 });
 
 // Traducción inicial
@@ -341,14 +345,18 @@ function isoWeek(d) {
   return { year: date.getUTCFullYear(), week };
 }
 
-function getLast7DaysCounts() {
-  const counts = Array(7).fill(0);
+function getWeeksOfMonthCounts() {
   const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const weekCount = Math.ceil(daysInMonth / 7);
+  const counts = Array(weekCount).fill(0);
   for (const item of logs) {
     const d = new Date(item.timestamp);
-    const diff = Math.floor((now - d) / 86400000);
-    if (diff >= 0 && diff < 7) {
-      counts[6 - diff]++;
+    if (d.getFullYear() === year && d.getMonth() === month) {
+      const week = Math.floor((d.getDate() - 1) / 7);
+      counts[week] += 1;
     }
   }
   return counts;
@@ -357,7 +365,7 @@ function getLast7DaysCounts() {
 function drawChart() {
   if (!chartCanvas) return;
   const ctx = chartCanvas.getContext("2d");
-  const data = getLast7DaysCounts();
+  const data = getWeeksOfMonthCounts();
   const w = chartCanvas.width;
   const h = chartCanvas.height;
   const marginLeft = 30;
@@ -378,22 +386,19 @@ function drawChart() {
   ctx.fillText("0", marginLeft - 5, originY);
   ctx.fillText(String(max), marginLeft - 5, 15);
   ctx.textAlign = "center";
-  ctx.fillText(t("days"), (w + marginLeft) / 2, h - 5);
+  ctx.fillText(t("weeks"), (w + marginLeft) / 2, h - 5);
   ctx.save();
   ctx.translate(15, h / 2);
   ctx.rotate(-Math.PI / 2);
   ctx.fillText(t("entries"), 0, 0);
   ctx.restore();
-  const today = new Date();
   data.forEach((val, i) => {
     const barHeight = (val / max) * (originY - 10);
     const x = marginLeft + i * barWidth;
     ctx.fillStyle = "#66ccff";
     ctx.fillRect(x + 4, originY - barHeight, barWidth - 8, barHeight);
-    const d = new Date(today);
-    d.setDate(today.getDate() - (6 - i));
-    const label = d.toLocaleDateString(lang, { weekday: "short" });
     ctx.fillStyle = "#000000";
+    const label = String(i + 1);
     ctx.fillText(label, x + barWidth / 2, h - marginBottom + 15);
   });
 }
@@ -508,7 +513,7 @@ function renderSettings() {
       renderButtons();
     });
 
-    li.append(handle, input, del, color);
+    li.append(handle, input, color, del);
     buttonList.appendChild(li);
   });
 

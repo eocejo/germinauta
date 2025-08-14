@@ -69,6 +69,7 @@ const defaultSettings = {
 };
 
 const LABEL_LIMIT = 10;
+const MAX_BUTTONS = 5;
 const defaultColors = [
   "#ffcc66",
   "#66ff66",
@@ -79,6 +80,10 @@ const defaultColors = [
 ];
 
 let settings = loadJSON(LS_SETTINGS, defaultSettings);
+settings.buttons = settings.buttons
+  .slice(0, MAX_BUTTONS)
+  .map((b) => ({ ...b, label: b.label.slice(0, LABEL_LIMIT) }));
+saveJSON(LS_SETTINGS, settings);
 let logs = loadJSON(LS_LOG, []);
 const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
@@ -264,7 +269,7 @@ function renderButtons() {
 
     const labelSpan = document.createElement("span");
     labelSpan.className = "label";
-    labelSpan.textContent = b.label;
+    labelSpan.textContent = b.label.slice(0, LABEL_LIMIT);
     btn.appendChild(labelSpan);
 
     if (settings.showButtonCounts) {
@@ -422,6 +427,7 @@ closeSettings.addEventListener("click", () => {
 });
 
 addButton.addEventListener("click", () => {
+  if (settings.buttons.length >= MAX_BUTTONS) return;
   const label = newLabel.value.trim().slice(0, LABEL_LIMIT);
   if (!label) return;
   const color = newColor.value;
@@ -488,9 +494,10 @@ function renderSettings() {
 
     const input = document.createElement("input");
     input.type = "text";
-    input.value = b.label;
+    input.maxLength = LABEL_LIMIT;
+    input.value = b.label.slice(0, LABEL_LIMIT);
     input.addEventListener("input", () => {
-      settings.buttons[idx].label = input.value;
+      settings.buttons[idx].label = input.value.slice(0, LABEL_LIMIT);
       saveJSON(LS_SETTINGS, settings);
       renderButtons();
     });
@@ -517,6 +524,9 @@ function renderSettings() {
     buttonList.appendChild(li);
   });
 
+  addButton.disabled = settings.buttons.length >= MAX_BUTTONS;
+  newLabel.disabled = addButton.disabled;
+  newColor.disabled = addButton.disabled;
   saveJSON(LS_SETTINGS, settings);
 }
 

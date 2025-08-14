@@ -63,6 +63,7 @@ window.addEventListener("orientationchange", lockOrientation);
 // Config persistente
 const LS_SETTINGS = "habitSettings";
 const LS_LOG = "habitLog";
+const LS_NOTES = "habitNotes";
 
 const storageAvailable = isStorageAvailable();
 
@@ -90,6 +91,7 @@ settings.buttons = settings.buttons
   .map((b) => ({ ...b, label: b.label.slice(0, LABEL_LIMIT) }));
 saveJSON(LS_SETTINGS, settings);
 let logs = loadJSON(LS_LOG, []);
+let notes = loadJSON(LS_NOTES, {});
 const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
 // Elementos
@@ -125,6 +127,11 @@ const settingsHabits = document.getElementById("settings-habits");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
 const chartCanvas = document.getElementById("chart-week");
+const noteSheet = document.getElementById("note-sheet");
+const noteTitle = document.getElementById("note-title");
+const noteText = document.getElementById("note-text");
+const closeNote = document.getElementById("close-note");
+let currentNoteLabel = "";
 
 const audioCtx = window.AudioContext ? new AudioContext() : null;
 const audioBuffers = {};
@@ -196,6 +203,7 @@ addButton.textContent = t("add");
 resetApp.textContent = t("reset");
 refreshApp.textContent = t("refresh");
 closeSettings.textContent = t("close");
+closeNote.setAttribute("aria-label", t("close"));
 statsHeading.textContent = t("stats");
 lblToday.textContent = `${t("today")}:`;
 lblWeek.textContent = `${t("week")}:`;
@@ -262,6 +270,14 @@ function handleAction(label) {
   if (settings.showButtonCounts) renderButtons();
 }
 
+function openNote(label) {
+  currentNoteLabel = label;
+  noteTitle.textContent = label;
+  noteText.value = notes[label] || "";
+  noteSheet.hidden = false;
+  noteText.focus();
+}
+
 function renderButtons() {
   buttonsEl.innerHTML = "";
   const counts = logs.reduce((acc, l) => {
@@ -286,7 +302,25 @@ function renderButtons() {
     }
 
     btn.style.background = b.color || "#ffcc66";
-    btn.addEventListener("click", () => handleAction(b.label));
+    let holdTimeout;
+    let held = false;
+    btn.addEventListener("pointerdown", () => {
+      held = false;
+      holdTimeout = setTimeout(() => {
+        held = true;
+        openNote(b.label);
+      }, 600);
+    });
+    btn.addEventListener("pointerup", () => {
+      clearTimeout(holdTimeout);
+      if (!held) handleAction(b.label);
+    });
+    btn.addEventListener("pointerleave", () => {
+      clearTimeout(holdTimeout);
+    });
+    btn.addEventListener("pointercancel", () => {
+      clearTimeout(holdTimeout);
+    });
     buttonsEl.appendChild(btn);
   });
   applyBottomArc(buttonsEl);
@@ -463,6 +497,7 @@ resetApp.addEventListener("click", () => {
   if (!ok) return;
   localStorage.removeItem(LS_SETTINGS);
   localStorage.removeItem(LS_LOG);
+  localStorage.removeItem(LS_NOTES);
   location.reload();
 });
 
@@ -481,7 +516,19 @@ refreshApp.addEventListener("click", async () => {
       await caches.delete(name);
     }
   }
+  localStorage.removeItem(LS_NOTES);
   location.reload();
+});
+
+closeNote.addEventListener("click", () => {
+  notes[currentNoteLabel] = noteText.value;
+  saveJSON(LS_NOTES, notes);
+  noteSheet.hidden = true;
+});
+
+noteText.addEventListener("input", () => {
+  notes[currentNoteLabel] = noteText.value;
+  saveJSON(LS_NOTES, notes);
 });
 
 function renderSettings() {
@@ -525,7 +572,9 @@ function renderSettings() {
     del.textContent = "✕";
     del.addEventListener("click", () => {
       settings.buttons.splice(idx, 1);
+      delete notes[b.label];
       saveJSON(LS_SETTINGS, settings);
+      saveJSON(LS_NOTES, notes);
       renderSettings();
       renderButtons();
     });

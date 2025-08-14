@@ -51,9 +51,14 @@ const lang = navigator.language.startsWith("es") ? "es" : "en";
 document.documentElement.lang = lang;
 const t = (k) => translations[lang][k];
 
-if (screen.orientation && screen.orientation.lock) {
-  screen.orientation.lock("portrait").catch(() => {});
+function lockOrientation() {
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("portrait").catch(() => {});
+  }
 }
+
+lockOrientation();
+window.addEventListener("orientationchange", lockOrientation);
 
 // Config persistente
 const LS_SETTINGS = "habitSettings";
@@ -418,6 +423,7 @@ closeStats.addEventListener("click", () => {
 });
 
 btnSettings.addEventListener("click", () => {
+  renderSettings();
   settingsSheet.hidden = false;
 });
 

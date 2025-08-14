@@ -163,12 +163,13 @@ for (const [name, url] of Object.entries(soundFiles)) {
   loadSound(name, url);
 }
 
-let nextDefault = settings.buttons.length;
-function setNextDefaults() {
-  newColor.value = defaultColors[nextDefault % defaultColors.length];
-  nextDefault += 1;
-}
-setNextDefaults();
+let lastColor = settings.buttons.length
+  ? settings.buttons[settings.buttons.length - 1].color
+  : defaultColors[0];
+newColor.value = lastColor;
+newColor.addEventListener("input", () => {
+  lastColor = newColor.value;
+});
 
 let dragIndex = null;
 document.addEventListener("pointerup", () => {
@@ -502,7 +503,6 @@ addButton.addEventListener("click", () => {
   const color = newColor.value;
   settings.buttons.push({ label, color });
   newLabel.value = "";
-  setNextDefaults();
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
   renderButtons();
@@ -591,6 +591,8 @@ function renderSettings() {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);
       renderButtons();
+      lastColor = color.value;
+      newColor.value = lastColor;
     });
 
     const del = document.createElement("button");

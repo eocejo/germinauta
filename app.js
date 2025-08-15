@@ -722,7 +722,6 @@ refreshApp.addEventListener("click", async () => {
       await caches.delete(name);
     }
   }
-  localStorage.removeItem(LS_NOTES);
   location.reload();
 });
 

@@ -94,7 +94,7 @@ settings.buttons = settings.buttons
 saveJSON(LS_SETTINGS, settings);
 let logs = loadJSON(LS_LOG, []);
 let notes = loadJSON(LS_NOTES, {});
-const thresholds = [2, 3, 4, 5, 6]; // 1→2, 2→3, 3→4, 4→5, 5→6
+const thresholds = [5, 20, 100, 250, 500]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
 // Elementos
 let creatureEl = document.getElementById("creature");

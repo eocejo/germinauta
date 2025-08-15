@@ -232,6 +232,7 @@ if (introVideo) {
   } else {
     introVideo.addEventListener("canplay", playIntro, { once: true });
   }
+  document.addEventListener("pointerdown", playIntro, { once: true });
   introVideo.addEventListener("ended", () => {
     introVideo.classList.add("fade-out");
     introVideo.addEventListener(
@@ -361,7 +362,13 @@ function renderStage() {
       creatureEl.autoplay = true;
       creatureEl.loop = true;
     }
-    creatureEl.play().catch(() => {});
+    const playCreature = () => creatureEl.play().catch(() => {});
+    if (creatureEl.readyState >= 2) {
+      playCreature();
+    } else {
+      creatureEl.addEventListener("canplay", playCreature, { once: true });
+    }
+    document.addEventListener("pointerdown", playCreature, { once: true });
   } else {
     if (creatureEl.tagName !== "IMG") {
       const img = document.createElement("img");

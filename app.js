@@ -337,11 +337,11 @@ function renderStage() {
       video.loop = true;
       video.muted = true;
       video.playsInline = true;
-      video.src = "assets/videos/stage1.mp4";
+      video.src = "assets/videos/stage1.mov";
       creatureEl.replaceWith(video);
       creatureEl = video;
     } else {
-      creatureEl.src = "assets/videos/stage1.mp4";
+      creatureEl.src = "assets/videos/stage1.mov";
     }
     creatureEl.play().catch(() => {});
   } else {

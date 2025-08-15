@@ -81,7 +81,7 @@ const defaultSettings = {
   stageProgress: 0,
 };
 
-const LABEL_LIMIT = 10;
+const LABEL_LIMIT = 8;
 const MAX_BUTTONS = 5;
 const defaultColors = [
   "#ffcc66",
@@ -146,11 +146,11 @@ const chartCanvas = document.getElementById("chart-week");
 const noteSheet = document.getElementById("note-sheet");
 const noteTitle = document.getElementById("note-title");
 const noteText = document.getElementById("note-text");
+const noteCount = document.getElementById("note-count");
+const noteMinus = document.getElementById("note-count-minus");
+const notePlus = document.getElementById("note-count-plus");
 const closeNote = document.getElementById("close-note");
 let currentNoteId = "";
-let lastTapId = "";
-let lastTapTime = 0;
-const DOUBLE_TAP_DELAY = 600;
 
 const audioCtx = window.AudioContext ? new AudioContext() : null;
 const audioBuffers = {};
@@ -329,11 +329,24 @@ function undoAction(id) {
   if (settings.showButtonCounts) renderButtons();
 }
 
+function getCurrentCount() {
+  return logs.reduce((acc, l) => {
+    const key = l.decisionId || l.decisionLabel;
+    if (key === currentNoteId) acc += 1;
+    return acc;
+  }, 0);
+}
+
+function updateNoteCount() {
+  noteCount.textContent = String(getCurrentCount());
+}
+
 function openNote(id, label) {
   currentNoteId = id;
   noteTitle.textContent = label;
   noteText.value = notes[id] || "";
   noteSheet.hidden = false;
+  updateNoteCount();
   const sel = window.getSelection();
   if (sel) sel.removeAllRanges();
   noteText.focus();
@@ -377,15 +390,7 @@ function renderButtons() {
     btn.addEventListener("pointerup", () => {
       clearTimeout(holdTimeout);
       if (!held) {
-        const now = Date.now();
-        if (lastTapId === b.id && now - lastTapTime < DOUBLE_TAP_DELAY) {
-          undoAction(b.id);
-          lastTapId = "";
-        } else {
-          handleAction(b.id);
-          lastTapId = b.id;
-          lastTapTime = now;
-        }
+        handleAction(b.id);
       }
     });
     btn.addEventListener("pointerleave", () => {
@@ -642,6 +647,18 @@ closeNote.addEventListener("click", () => {
 noteText.addEventListener("input", () => {
   notes[currentNoteId] = noteText.value;
   saveJSON(LS_NOTES, notes);
+});
+
+noteMinus.addEventListener("click", () => {
+  if (getCurrentCount() > 0) {
+    undoAction(currentNoteId);
+    updateNoteCount();
+  }
+});
+
+notePlus.addEventListener("click", () => {
+  handleAction(currentNoteId);
+  updateNoteCount();
 });
 
 function renderSettings() {

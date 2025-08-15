@@ -143,6 +143,8 @@ body {
     box-shadow 0.2s ease,
     background 0.3s ease;
   transform: translateY(var(--arc-y));
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 #buttons .action:hover {

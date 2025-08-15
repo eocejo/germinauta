@@ -219,6 +219,12 @@ body {
 #stats canvas {
   width: 100%;
   height: auto;
+  margin-top: 10px;
+}
+
+#stats select {
+  margin-top: 10px;
+  width: 100%;
 }
 
 .row {

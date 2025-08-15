@@ -11,8 +11,10 @@ const translations = {
     close: "Close",
     advanced: "Advanced",
     today: "Today",
+    day: "Day",
     week: "Week",
     month: "Month",
+    year: "Year",
     total: "Total",
     storageError: "Storage unavailable. Progress won't be saved.",
     confirmReset: "Reset the app? This will erase all data.",
@@ -20,6 +22,9 @@ const translations = {
     showStats: "Show stats",
     stats: "Stats",
     weeks: "Weeks",
+    months: "Months",
+    days: "Days",
+    hours: "Hours",
     entries: "Entries",
     defaultButton: "🧭",
   },
@@ -35,8 +40,10 @@ const translations = {
     close: "Cerrar",
     advanced: "Avanzado",
     today: "Hoy",
+    day: "Día",
     week: "Semana",
     month: "Mes",
+    year: "Año",
     total: "Total",
     storageError: "Almacenamiento no disponible. El progreso no se guardará.",
     confirmReset: "¿Renacer la app? Se borrarán todos los datos.",
@@ -44,6 +51,9 @@ const translations = {
     showStats: "Mostrar estadísticas",
     stats: "Estadísticas",
     weeks: "Semanas",
+    months: "Meses",
+    days: "Días",
+    hours: "Horas",
     entries: "Registros",
     defaultButton: "🧭",
   },
@@ -143,6 +153,7 @@ const settingsAdvanced = document.getElementById("settings-advanced");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
 const chartCanvas = document.getElementById("chart-week");
+const chartRange = document.getElementById("chart-range");
 const noteSheet = document.getElementById("note-sheet");
 const noteTitle = document.getElementById("note-title");
 const noteText = document.getElementById("note-text");
@@ -230,6 +241,14 @@ lblToday.textContent = `${t("today")}:`;
 lblWeek.textContent = `${t("week")}:`;
 lblMonth.textContent = `${t("month")}:`;
 lblTotal.textContent = `${t("total")}:`;
+chartRange.innerHTML = `
+  <option value="day">${t("day")}</option>
+  <option value="week">${t("week")}</option>
+  <option value="month">${t("month")}</option>
+  <option value="year">${t("year")}</option>
+`;
+chartRange.value = "month";
+chartRange.addEventListener("change", drawChart);
 toggleCounts.textContent = settings.showButtonCounts
   ? t("hideCounts")
   : t("showCounts");
@@ -520,6 +539,33 @@ function isoWeek(d) {
   return { year: date.getUTCFullYear(), week };
 }
 
+function getHoursOfDayCounts() {
+  const now = new Date();
+  const counts = Array(24).fill(0);
+  for (const item of logs) {
+    const d = new Date(item.timestamp);
+    if (isSameDay(d, now)) {
+      counts[d.getHours()] += 1;
+    }
+  }
+  return counts;
+}
+
+function getDaysOfWeekCounts() {
+  const now = new Date();
+  const current = isoWeek(now);
+  const counts = Array(7).fill(0);
+  for (const item of logs) {
+    const d = new Date(item.timestamp);
+    const w = isoWeek(d);
+    if (w.year === current.year && w.week === current.week) {
+      const day = (d.getDay() + 6) % 7;
+      counts[day] += 1;
+    }
+  }
+  return counts;
+}
+
 function getWeeksOfMonthCounts() {
   const now = new Date();
   const year = now.getFullYear();
@@ -537,15 +583,49 @@ function getWeeksOfMonthCounts() {
   return counts;
 }
 
+function getMonthsOfYearCounts() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const counts = Array(12).fill(0);
+  for (const item of logs) {
+    const d = new Date(item.timestamp);
+    if (d.getFullYear() === year) {
+      counts[d.getMonth()] += 1;
+    }
+  }
+  return counts;
+}
+
 function drawChart() {
-  if (!chartCanvas) return;
+  if (!chartCanvas || !chartRange) return;
   const ctx = chartCanvas.getContext("2d");
-  const data = getWeeksOfMonthCounts();
   const w = chartCanvas.width;
   const h = chartCanvas.height;
   const marginLeft = 30;
   const marginBottom = 30;
   const originY = h - marginBottom;
+  let data = [];
+  let xLabel = "";
+  let labelOffset = 1;
+  switch (chartRange.value) {
+    case "day":
+      data = getHoursOfDayCounts();
+      xLabel = t("hours");
+      labelOffset = 0;
+      break;
+    case "week":
+      data = getDaysOfWeekCounts();
+      xLabel = t("days");
+      break;
+    case "month":
+      data = getWeeksOfMonthCounts();
+      xLabel = t("weeks");
+      break;
+    case "year":
+      data = getMonthsOfYearCounts();
+      xLabel = t("months");
+      break;
+  }
   ctx.clearRect(0, 0, w, h);
   const max = Math.max(...data, 1);
   const barWidth = (w - marginLeft - 10) / data.length;
@@ -561,7 +641,7 @@ function drawChart() {
   ctx.fillText("0", marginLeft - 5, originY);
   ctx.fillText(String(max), marginLeft - 5, 15);
   ctx.textAlign = "center";
-  ctx.fillText(t("weeks"), (w + marginLeft) / 2, h - 5);
+  ctx.fillText(xLabel, (w + marginLeft) / 2, h - 5);
   ctx.save();
   ctx.translate(15, h / 2);
   ctx.rotate(-Math.PI / 2);
@@ -573,7 +653,7 @@ function drawChart() {
     ctx.fillStyle = "#66ccff";
     ctx.fillRect(x + 4, originY - barHeight, barWidth - 8, barHeight);
     ctx.fillStyle = "#000000";
-    const label = String(i + 1);
+    const label = String(i + labelOffset);
     ctx.fillText(label, x + barWidth / 2, h - marginBottom + 15);
   });
 }

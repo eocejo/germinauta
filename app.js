@@ -222,7 +222,16 @@ renderSettings();
 updateStats();
 if (introVideo) {
   introVideo.removeAttribute("controls");
-  introVideo.play().catch(() => {});
+  introVideo.muted = true;
+  introVideo.setAttribute("muted", "");
+  introVideo.setAttribute("playsinline", "");
+  introVideo.setAttribute("webkit-playsinline", "");
+  const playIntro = () => introVideo.play().catch(() => {});
+  if (introVideo.readyState >= 2) {
+    playIntro();
+  } else {
+    introVideo.addEventListener("canplay", playIntro, { once: true });
+  }
   introVideo.addEventListener("ended", () => {
     introVideo.classList.add("fade-out");
     introVideo.addEventListener(
@@ -336,12 +345,21 @@ function renderStage() {
       video.autoplay = true;
       video.loop = true;
       video.muted = true;
+      video.setAttribute("muted", "");
       video.playsInline = true;
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
       video.src = "assets/videos/stage1.mov";
       creatureEl.replaceWith(video);
       creatureEl = video;
     } else {
       creatureEl.src = "assets/videos/stage1.mov";
+      creatureEl.muted = true;
+      creatureEl.setAttribute("muted", "");
+      creatureEl.setAttribute("playsinline", "");
+      creatureEl.setAttribute("webkit-playsinline", "");
+      creatureEl.autoplay = true;
+      creatureEl.loop = true;
     }
     creatureEl.play().catch(() => {});
   } else {

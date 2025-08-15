@@ -69,8 +69,13 @@ const LS_NOTES = "habitNotes";
 
 const storageAvailable = isStorageAvailable();
 
+const uuid = () =>
+  typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : String(Date.now() + Math.random());
+
 const defaultSettings = {
-  buttons: [{ label: t("defaultButton"), color: "#ffcc66" }],
+  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#ffcc66" }],
   showButtonCounts: true,
   stage: 1,
   stageProgress: 0,
@@ -88,12 +93,20 @@ const defaultColors = [
 ];
 
 let settings = loadJSON(LS_SETTINGS, defaultSettings);
-settings.buttons = settings.buttons
-  .slice(0, MAX_BUTTONS)
-  .map((b) => ({ ...b, label: b.label.slice(0, LABEL_LIMIT) }));
+settings.buttons = settings.buttons.slice(0, MAX_BUTTONS).map((b) => ({
+  id: b.id || uuid(),
+  label: b.label.slice(0, LABEL_LIMIT),
+  color: b.color,
+}));
 saveJSON(LS_SETTINGS, settings);
 let logs = loadJSON(LS_LOG, []);
 let notes = loadJSON(LS_NOTES, {});
+const oldNotes = notes;
+notes = {};
+settings.buttons.forEach((b) => {
+  notes[b.id] = oldNotes[b.id] || oldNotes[b.label] || "";
+});
+saveJSON(LS_NOTES, notes);
 const thresholds = [5, 20, 100, 250, 500]; // 1→2, 2→3, 3→4, 4→5, 5→6
 
 // Elementos
@@ -134,7 +147,10 @@ const noteSheet = document.getElementById("note-sheet");
 const noteTitle = document.getElementById("note-title");
 const noteText = document.getElementById("note-text");
 const closeNote = document.getElementById("close-note");
-let currentNoteLabel = "";
+let currentNoteId = "";
+let lastTapId = "";
+let lastTapTime = 0;
+const DOUBLE_TAP_DELAY = 600;
 
 const audioCtx = window.AudioContext ? new AudioContext() : null;
 const audioBuffers = {};
@@ -259,9 +275,11 @@ if ("serviceWorker" in navigator) {
 }
 
 // Acciones
-function handleAction(label) {
+function handleAction(id) {
+  const button = settings.buttons.find((b) => b.id === id);
+  const label = button ? button.label : "";
   const now = new Date().toISOString();
-  logs.push({ decisionLabel: label, timestamp: now });
+  logs.push({ decisionId: id, decisionLabel: label, timestamp: now });
   saveJSON(LS_LOG, logs);
 
   playTapSound();
@@ -279,30 +297,59 @@ function handleAction(label) {
     renderStage();
     playStageSound();
     playStageParticles();
+  } else {
+    saveJSON(LS_SETTINGS, settings);
   }
 
   updateStats();
   if (settings.showButtonCounts) renderButtons();
 }
 
-function openNote(label) {
-  currentNoteLabel = label;
+function undoAction(id) {
+  for (let i = logs.length - 1; i >= 0; i--) {
+    const key = logs[i].decisionId || logs[i].decisionLabel;
+    if (key === id) {
+      logs.splice(i, 1);
+      break;
+    }
+  }
+  saveJSON(LS_LOG, logs);
+  settings.stageProgress -= 1;
+  if (settings.stageProgress < 0) {
+    if (settings.stage > 1) {
+      settings.stage -= 1;
+      settings.stageProgress = thresholds[settings.stage - 1] - 1;
+      renderStage();
+    } else {
+      settings.stageProgress = 0;
+    }
+  }
+  saveJSON(LS_SETTINGS, settings);
+  updateStats();
+  if (settings.showButtonCounts) renderButtons();
+}
+
+function openNote(id, label) {
+  currentNoteId = id;
   noteTitle.textContent = label;
-  noteText.value = notes[label] || "";
+  noteText.value = notes[id] || "";
   noteSheet.hidden = false;
+  const sel = window.getSelection();
+  if (sel) sel.removeAllRanges();
   noteText.focus();
 }
 
 function renderButtons() {
   buttonsEl.innerHTML = "";
   const counts = logs.reduce((acc, l) => {
-    acc[l.decisionLabel] = (acc[l.decisionLabel] || 0) + 1;
+    const key = l.decisionId || l.decisionLabel;
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
   settings.buttons.forEach((b) => {
     const btn = document.createElement("button");
     btn.className = "action";
-    const count = counts[b.label] || 0;
+    const count = counts[b.id] || 0;
 
     const labelSpan = document.createElement("span");
     labelSpan.className = "label";
@@ -319,16 +366,27 @@ function renderButtons() {
     btn.style.background = b.color || "#ffcc66";
     let holdTimeout;
     let held = false;
-    btn.addEventListener("pointerdown", () => {
+    btn.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
       held = false;
       holdTimeout = setTimeout(() => {
         held = true;
-        openNote(b.label);
+        openNote(b.id, b.label);
       }, 600);
     });
     btn.addEventListener("pointerup", () => {
       clearTimeout(holdTimeout);
-      if (!held) handleAction(b.label);
+      if (!held) {
+        const now = Date.now();
+        if (lastTapId === b.id && now - lastTapTime < DOUBLE_TAP_DELAY) {
+          undoAction(b.id);
+          lastTapId = "";
+        } else {
+          handleAction(b.id);
+          lastTapId = b.id;
+          lastTapTime = now;
+        }
+      }
     });
     btn.addEventListener("pointerleave", () => {
       clearTimeout(holdTimeout);
@@ -531,7 +589,7 @@ addButton.addEventListener("click", () => {
   const label = newLabel.value.trim().slice(0, LABEL_LIMIT);
   if (!label) return;
   const color = newColor.value;
-  settings.buttons.push({ label, color });
+  settings.buttons.push({ id: uuid(), label, color });
   newLabel.value = "";
   saveJSON(LS_SETTINGS, settings);
   renderSettings();
@@ -576,13 +634,13 @@ refreshApp.addEventListener("click", async () => {
 });
 
 closeNote.addEventListener("click", () => {
-  notes[currentNoteLabel] = noteText.value;
+  notes[currentNoteId] = noteText.value;
   saveJSON(LS_NOTES, notes);
   noteSheet.hidden = true;
 });
 
 noteText.addEventListener("input", () => {
-  notes[currentNoteLabel] = noteText.value;
+  notes[currentNoteId] = noteText.value;
   saveJSON(LS_NOTES, notes);
 });
 
@@ -629,7 +687,7 @@ function renderSettings() {
     del.textContent = "✕";
     del.addEventListener("click", () => {
       settings.buttons.splice(idx, 1);
-      delete notes[b.label];
+      delete notes[b.id];
       saveJSON(LS_SETTINGS, settings);
       saveJSON(LS_NOTES, notes);
       renderSettings();

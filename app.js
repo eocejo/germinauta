@@ -367,6 +367,14 @@ function renderButtons() {
     const labelSpan = document.createElement("span");
     labelSpan.className = "label";
     labelSpan.textContent = b.label.slice(0, LABEL_LIMIT);
+    const trimmedLabel = labelSpan.textContent.trim();
+    if (
+      /^\p{Extended_Pictographic}(?:\uFE0F|\u200D\p{Extended_Pictographic})*$/u.test(
+        trimmedLabel,
+      )
+    ) {
+      labelSpan.classList.add("emoji-only");
+    }
     btn.appendChild(labelSpan);
 
     if (settings.showButtonCounts) {

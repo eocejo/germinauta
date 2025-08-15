@@ -160,9 +160,13 @@ body {
   word-break: break-word;
 }
 
+#buttons .action .label.emoji-only {
+  font-size: 32px;
+}
+
 #buttons .action .count {
   margin-top: 2px;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
 }
 

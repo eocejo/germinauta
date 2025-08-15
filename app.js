@@ -9,6 +9,7 @@ const translations = {
     reset: "Reset",
     refresh: "Clear Cache",
     close: "Close",
+    advanced: "Advanced",
     today: "Today",
     week: "Week",
     month: "Month",
@@ -32,6 +33,7 @@ const translations = {
     reset: "Renacer",
     refresh: "Borrar Cache",
     close: "Cerrar",
+    advanced: "Avanzado",
     today: "Hoy",
     week: "Semana",
     month: "Mes",
@@ -124,6 +126,7 @@ const lblMonth = document.getElementById("lbl-month");
 const lblTotal = document.getElementById("lbl-total");
 const settingsTitle = document.getElementById("settings-title");
 const settingsHabits = document.getElementById("settings-habits");
+const settingsAdvanced = document.getElementById("settings-advanced");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
 const chartCanvas = document.getElementById("chart-week");
@@ -199,6 +202,7 @@ btnSettings.setAttribute("aria-label", t("settings"));
 closeStats.setAttribute("aria-label", t("close"));
 settingsTitle.textContent = t("settings");
 settingsHabits.textContent = t("habits");
+settingsAdvanced.textContent = t("advanced");
 newLabel.placeholder = t("buttonName");
 addButton.textContent = t("add");
 resetApp.textContent = t("reset");

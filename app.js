@@ -221,8 +221,13 @@ renderButtons();
 renderSettings();
 updateStats();
 if (introVideo) {
+  introVideo.autoplay = true;
+  introVideo.muted = true;
+  introVideo.playsInline = true;
   introVideo.removeAttribute("controls");
-  introVideo.play().catch(() => {});
+  const playIntro = () => introVideo.play().catch(() => {});
+  introVideo.addEventListener("canplay", playIntro, { once: true });
+  playIntro();
   introVideo.addEventListener("ended", () => {
     introVideo.classList.add("fade-out");
     introVideo.addEventListener(
@@ -327,6 +332,20 @@ function renderButtons() {
   applyBottomArc(buttonsEl);
 }
 
+function setStageOneSources(video) {
+  video.innerHTML = "";
+  const sources = [
+    { src: "assets/videos/stage1.mp4", type: "video/mp4" },
+    { src: "assets/videos/stage1.mov", type: "video/quicktime" },
+  ];
+  for (const { src, type } of sources) {
+    const source = document.createElement("source");
+    source.src = src;
+    source.type = type;
+    video.appendChild(source);
+  }
+}
+
 function renderStage() {
   const s = settings.stage;
   if (s === 1) {
@@ -337,11 +356,11 @@ function renderStage() {
       video.loop = true;
       video.muted = true;
       video.playsInline = true;
-      video.src = "assets/videos/stage1.mp4";
+      setStageOneSources(video);
       creatureEl.replaceWith(video);
       creatureEl = video;
     } else {
-      creatureEl.src = "assets/videos/stage1.mp4";
+      setStageOneSources(creatureEl);
     }
     creatureEl.play().catch(() => {});
   } else {

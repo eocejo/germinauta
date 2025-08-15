@@ -1,4 +1,4 @@
-const CACHE = "habit-reinforcer-v4";
+const CACHE = "habit-reinforcer-v6";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const ASSETS = [
   "./assets/icons/icon-512.png",
   "./assets/images/background.png",
   "./assets/videos/stage1.mp4",
+  "./assets/videos/stage1.mov",
   "./assets/images/stage2.png",
   "./assets/images/stage3.png",
   "./assets/images/stage4.png",

@@ -224,7 +224,14 @@ body {
 
 #stats select {
   margin-top: 10px;
-  width: 100%;
+  width: auto;
+  align-self: flex-start;
+  padding: 4px 8px;
+  font-weight: 600;
+  font-size: 1.1em;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #000000;
 }
 
 .row {

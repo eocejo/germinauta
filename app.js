@@ -647,6 +647,9 @@ function drawChart() {
   ctx.rotate(-Math.PI / 2);
   ctx.fillText(t("entries"), 0, 0);
   ctx.restore();
+  const sampleLabel = String(data.length - 1 + labelOffset);
+  const labelWidth = ctx.measureText(sampleLabel).width + 4;
+  const step = Math.max(1, Math.ceil(labelWidth / barWidth));
   data.forEach((val, i) => {
     const barHeight = (val / max) * (originY - 10);
     const x = marginLeft + i * barWidth;
@@ -654,7 +657,9 @@ function drawChart() {
     ctx.fillRect(x + 4, originY - barHeight, barWidth - 8, barHeight);
     ctx.fillStyle = "#000000";
     const label = String(i + labelOffset);
-    ctx.fillText(label, x + barWidth / 2, h - marginBottom + 15);
+    if (i % step === 0 || i === data.length - 1) {
+      ctx.fillText(label, x + barWidth / 2, h - marginBottom + 15);
+    }
   });
 }
 

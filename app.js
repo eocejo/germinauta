@@ -93,7 +93,7 @@ const uuid = () =>
     : String(Date.now() + Math.random());
 
 const defaultSettings = {
-  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#3366cc" }],
+  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#ffcc00" }],
   showButtonCounts: true,
   showProgressCounter: false,
   stage: 1,
@@ -103,7 +103,7 @@ const defaultSettings = {
 const LABEL_LIMIT = 8;
 const MAX_BUTTONS = 5;
 const defaultColors = [
-  "#3366cc",
+  "#ffcc00",
   "#66ff66",
   "#66ccff",
   "#ff6666",
@@ -438,7 +438,7 @@ function renderButtons() {
       btn.appendChild(countSpan);
     }
 
-    btn.style.background = b.color || "#3366cc";
+    btn.style.background = b.color || "#ffcc00";
     let holdTimeout;
     let held = false;
     btn.addEventListener("pointerdown", (e) => {
@@ -856,7 +856,7 @@ function renderSettings() {
 
     const color = document.createElement("input");
     color.type = "color";
-    color.value = b.color || "#3366cc";
+    color.value = b.color || "#ffcc00";
     color.addEventListener("input", () => {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);

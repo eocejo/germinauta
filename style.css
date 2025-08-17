@@ -365,6 +365,12 @@ body {
   right: 8px;
 }
 
+#settings #close-settings {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
 #note-sheet #close-note {
   position: absolute;
   top: 8px;

@@ -26,6 +26,7 @@
       webkit-playsinline
     ></video>
     <div id="app">
+      <div id="progress-counter" hidden></div>
       <header id="hud">
         <button id="btn-settings" aria-label="Configuración">⚙️</button>
         <button id="btn-stats" aria-label="Mostrar estadísticas">📊</button>
@@ -84,6 +85,9 @@
             <button id="toggle-counts">Mostrar contadores</button>
           </div>
           <h3 id="settings-advanced">Avanzado</h3>
+          <div class="row">
+            <button id="toggle-progress">Mostrar progreso</button>
+          </div>
           <div class="row">
             <button id="reset-app">Renacer</button>
             <button id="refresh-app">Borrar Cache</button>

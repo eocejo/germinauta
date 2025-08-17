@@ -6,6 +6,8 @@ const translations = {
     buttonName: "Button name",
     showCounts: "Show counts",
     hideCounts: "Hide counts",
+    showProgress: "Show progress",
+    hideProgress: "Hide progress",
     reset: "Reset",
     refresh: "Clear Cache",
     close: "Close",
@@ -35,6 +37,8 @@ const translations = {
     buttonName: "Nombre del botón",
     showCounts: "Mostrar contadores",
     hideCounts: "Ocultar contadores",
+    showProgress: "Mostrar progreso",
+    hideProgress: "Ocultar progreso",
     reset: "Renacer",
     refresh: "Borrar Cache",
     close: "Cerrar",
@@ -87,6 +91,7 @@ const uuid = () =>
 const defaultSettings = {
   buttons: [{ id: uuid(), label: t("defaultButton"), color: "#ffcc66" }],
   showButtonCounts: true,
+  showProgressCounter: false,
   stage: 1,
   stageProgress: 0,
 };
@@ -108,6 +113,9 @@ settings.buttons = settings.buttons.slice(0, MAX_BUTTONS).map((b) => ({
   label: b.label.slice(0, LABEL_LIMIT),
   color: b.color,
 }));
+if (typeof settings.showProgressCounter !== "boolean") {
+  settings.showProgressCounter = false;
+}
 saveJSON(LS_SETTINGS, settings);
 let logs = loadJSON(LS_LOG, []);
 let notes = loadJSON(LS_NOTES, {});
@@ -139,6 +147,7 @@ newLabel.maxLength = LABEL_LIMIT;
 const newColor = document.getElementById("new-color");
 const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
+const toggleProgress = document.getElementById("toggle-progress");
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
 const refreshApp = document.getElementById("refresh-app");
@@ -152,6 +161,7 @@ const settingsHabits = document.getElementById("settings-habits");
 const settingsAdvanced = document.getElementById("settings-advanced");
 const storageErrorSheet = document.getElementById("storage-error");
 const storageErrorText = document.getElementById("storage-error-text");
+const progressCounter = document.getElementById("progress-counter");
 const chartCanvas = document.getElementById("chart-week");
 const chartRange = document.getElementById("chart-range");
 const noteSheet = document.getElementById("note-sheet");
@@ -252,12 +262,16 @@ chartRange.addEventListener("change", drawChart);
 toggleCounts.textContent = settings.showButtonCounts
   ? t("hideCounts")
   : t("showCounts");
+toggleProgress.textContent = settings.showProgressCounter
+  ? t("hideProgress")
+  : t("showProgress");
 storageErrorText.textContent = t("storageError");
 
 // Init
 renderStage();
 renderButtons();
 renderSettings();
+updateProgressCounter();
 updateStats();
 if (introVideo) {
   introVideo.removeAttribute("controls");
@@ -322,6 +336,7 @@ function handleAction(id) {
 
   updateStats();
   if (settings.showButtonCounts) renderButtons();
+  updateProgressCounter();
 }
 
 function undoAction(id) {
@@ -346,6 +361,7 @@ function undoAction(id) {
   saveJSON(LS_SETTINGS, settings);
   updateStats();
   if (settings.showButtonCounts) renderButtons();
+  updateProgressCounter();
 }
 
 function getCurrentCount() {
@@ -488,6 +504,18 @@ function playStageParticles() {
 }
 function playCompleteSound() {
   playSound("complete");
+}
+
+function updateProgressCounter() {
+  const threshold = thresholds[settings.stage - 1];
+  if (!threshold) {
+    progressCounter.hidden = true;
+    return;
+  }
+  const percent = Math.floor((settings.stageProgress / threshold) * 100);
+  progressCounter.textContent = `${percent}%`;
+  const shouldShow = settings.showProgressCounter || percent >= 85;
+  progressCounter.hidden = !shouldShow;
 }
 
 // Estadísticas
@@ -703,6 +731,15 @@ toggleCounts.addEventListener("click", () => {
   renderButtons();
 });
 
+toggleProgress.addEventListener("click", () => {
+  settings.showProgressCounter = !settings.showProgressCounter;
+  saveJSON(LS_SETTINGS, settings);
+  toggleProgress.textContent = settings.showProgressCounter
+    ? t("hideProgress")
+    : t("showProgress");
+  updateProgressCounter();
+});
+
 resetApp.addEventListener("click", () => {
   const ok = confirm(t("confirmReset"));
   if (!ok) return;
@@ -757,6 +794,9 @@ function renderSettings() {
   toggleCounts.textContent = settings.showButtonCounts
     ? t("hideCounts")
     : t("showCounts");
+  toggleProgress.textContent = settings.showProgressCounter
+    ? t("hideProgress")
+    : t("showProgress");
 
   buttonList.innerHTML = "";
   settings.buttons.forEach((b, idx) => {

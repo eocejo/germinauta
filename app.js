@@ -250,7 +250,7 @@ newLabel.placeholder = t("buttonName");
 addButton.textContent = t("add");
 resetApp.textContent = t("reset");
 refreshApp.textContent = t("refresh");
-closeSettings.textContent = t("close");
+closeSettings.setAttribute("aria-label", t("close"));
 closeNote.setAttribute("aria-label", t("close"));
 statsHeading.textContent = t("stats");
 lblToday.textContent = `${t("today")}:`;

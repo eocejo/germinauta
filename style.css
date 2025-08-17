@@ -61,7 +61,7 @@ body {
 #hud button {
   font-size: 18px;
   border: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: #0066ff;
   padding: 6px 10px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -74,7 +74,7 @@ body {
 }
 
 #hud button:hover {
-  background: rgba(0, 0, 0, 0.6);
+  background: #0050cc;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -258,6 +258,15 @@ body {
 
 #visibility-row {
   flex-wrap: nowrap;
+}
+
+#lbl-progress {
+  margin-left: 16px;
+}
+
+#visibility-row button img {
+  width: 20px;
+  height: 20px;
 }
 
 .row input[type="text"] {

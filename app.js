@@ -438,7 +438,7 @@ function renderButtons() {
       btn.appendChild(countSpan);
     }
 
-    btn.style.background = b.color || "#ffcc00";
+    btn.style.setProperty("--btn", b.color || "#ffcc00");
     let holdTimeout;
     let held = false;
     btn.addEventListener("pointerdown", (e) => {

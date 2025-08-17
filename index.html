@@ -78,16 +78,19 @@
           <ul id="button-list"></ul>
           <div class="row">
             <input id="new-label" type="text" placeholder="Nombre del botón" />
-            <input id="new-color" type="color" value="#ffcc66" />
+            <input id="new-color" type="color" value="#0044aa" />
             <button id="add-button">Agregar</button>
           </div>
           <div class="row">
             <button id="toggle-counts">Mostrar contadores</button>
           </div>
-          <h3 id="settings-advanced">Avanzado</h3>
           <div class="row">
-            <button id="toggle-progress">Mostrar progreso</button>
+            <span id="lbl-progress">Mostrar progreso</span>
+            <button id="toggle-progress" aria-label="Mostrar progreso">
+              👁‍🚫
+            </button>
           </div>
+          <h3 id="settings-advanced">Avanzado</h3>
           <div class="row">
             <button id="reset-app">Renacer</button>
             <button id="refresh-app">Borrar Cache</button>

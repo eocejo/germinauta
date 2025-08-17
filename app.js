@@ -89,7 +89,7 @@ const uuid = () =>
     : String(Date.now() + Math.random());
 
 const defaultSettings = {
-  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#ffcc66" }],
+  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#0044aa" }],
   showButtonCounts: true,
   showProgressCounter: false,
   stage: 1,
@@ -99,7 +99,7 @@ const defaultSettings = {
 const LABEL_LIMIT = 8;
 const MAX_BUTTONS = 5;
 const defaultColors = [
-  "#ffcc66",
+  "#0044aa",
   "#66ff66",
   "#66ccff",
   "#ff6666",
@@ -148,6 +148,7 @@ const newColor = document.getElementById("new-color");
 const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
 const toggleProgress = document.getElementById("toggle-progress");
+const lblProgress = document.getElementById("lbl-progress");
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
 const refreshApp = document.getElementById("refresh-app");
@@ -262,9 +263,11 @@ chartRange.addEventListener("change", drawChart);
 toggleCounts.textContent = settings.showButtonCounts
   ? t("hideCounts")
   : t("showCounts");
-toggleProgress.textContent = settings.showProgressCounter
+lblProgress.textContent = settings.showProgressCounter
   ? t("hideProgress")
   : t("showProgress");
+toggleProgress.textContent = settings.showProgressCounter ? "👁️" : "👁‍🚫";
+toggleProgress.setAttribute("aria-label", lblProgress.textContent);
 storageErrorText.textContent = t("storageError");
 
 // Init
@@ -419,7 +422,7 @@ function renderButtons() {
       btn.appendChild(countSpan);
     }
 
-    btn.style.background = b.color || "#ffcc66";
+    btn.style.background = b.color || "#0044aa";
     let holdTimeout;
     let held = false;
     btn.addEventListener("pointerdown", (e) => {
@@ -734,9 +737,11 @@ toggleCounts.addEventListener("click", () => {
 toggleProgress.addEventListener("click", () => {
   settings.showProgressCounter = !settings.showProgressCounter;
   saveJSON(LS_SETTINGS, settings);
-  toggleProgress.textContent = settings.showProgressCounter
+  lblProgress.textContent = settings.showProgressCounter
     ? t("hideProgress")
     : t("showProgress");
+  toggleProgress.textContent = settings.showProgressCounter ? "👁️" : "👁‍🚫";
+  toggleProgress.setAttribute("aria-label", lblProgress.textContent);
   updateProgressCounter();
 });
 
@@ -794,9 +799,11 @@ function renderSettings() {
   toggleCounts.textContent = settings.showButtonCounts
     ? t("hideCounts")
     : t("showCounts");
-  toggleProgress.textContent = settings.showProgressCounter
+  lblProgress.textContent = settings.showProgressCounter
     ? t("hideProgress")
     : t("showProgress");
+  toggleProgress.textContent = settings.showProgressCounter ? "👁️" : "👁‍🚫";
+  toggleProgress.setAttribute("aria-label", lblProgress.textContent);
 
   buttonList.innerHTML = "";
   settings.buttons.forEach((b, idx) => {
@@ -823,7 +830,7 @@ function renderSettings() {
 
     const color = document.createElement("input");
     color.type = "color";
-    color.value = b.color || "#ffcc66";
+    color.value = b.color || "#0044aa";
     color.addEventListener("input", () => {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);

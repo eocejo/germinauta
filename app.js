@@ -154,6 +154,11 @@ const toggleCounts = document.getElementById("toggle-counts");
 const lblCounts = document.getElementById("lbl-counts");
 const toggleProgress = document.getElementById("toggle-progress");
 const lblProgress = document.getElementById("lbl-progress");
+
+function setVisibilityIcon(btn, visible) {
+  const icon = visible ? "ojo-visible" : "ojo-novisible";
+  btn.innerHTML = `<img src="assets/icons/${icon}.png" alt="" width="24" height="24" />`;
+}
 const closeSettings = document.getElementById("close-settings");
 const resetApp = document.getElementById("reset-app");
 const refreshApp = document.getElementById("refresh-app");
@@ -266,14 +271,14 @@ chartRange.innerHTML = `
 chartRange.value = "month";
 chartRange.addEventListener("change", drawChart);
 lblCounts.textContent = t("counts");
-toggleCounts.textContent = "👁️";
+setVisibilityIcon(toggleCounts, settings.showButtonCounts);
 toggleCounts.classList.toggle("off", !settings.showButtonCounts);
 toggleCounts.setAttribute(
   "aria-label",
   settings.showButtonCounts ? t("hideCounts") : t("showCounts"),
 );
 lblProgress.textContent = t("progress");
-toggleProgress.textContent = "👁️";
+setVisibilityIcon(toggleProgress, settings.showProgressCounter);
 toggleProgress.classList.toggle("off", !settings.showProgressCounter);
 toggleProgress.setAttribute(
   "aria-label",
@@ -744,6 +749,7 @@ toggleCounts.addEventListener("click", () => {
     "aria-label",
     settings.showButtonCounts ? t("hideCounts") : t("showCounts"),
   );
+  setVisibilityIcon(toggleCounts, settings.showButtonCounts);
   renderButtons();
 });
 
@@ -755,6 +761,7 @@ toggleProgress.addEventListener("click", () => {
     "aria-label",
     settings.showProgressCounter ? t("hideProgress") : t("showProgress"),
   );
+  setVisibilityIcon(toggleProgress, settings.showProgressCounter);
   updateProgressCounter();
 });
 
@@ -810,14 +817,14 @@ notePlus.addEventListener("click", () => {
 
 function renderSettings() {
   lblCounts.textContent = t("counts");
-  toggleCounts.textContent = "👁️";
+  setVisibilityIcon(toggleCounts, settings.showButtonCounts);
   toggleCounts.classList.toggle("off", !settings.showButtonCounts);
   toggleCounts.setAttribute(
     "aria-label",
     settings.showButtonCounts ? t("hideCounts") : t("showCounts"),
   );
   lblProgress.textContent = t("progress");
-  toggleProgress.textContent = "👁️";
+  setVisibilityIcon(toggleProgress, settings.showProgressCounter);
   toggleProgress.classList.toggle("off", !settings.showProgressCounter);
   toggleProgress.setAttribute(
     "aria-label",

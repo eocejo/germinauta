@@ -331,8 +331,9 @@ body {
   color: inherit;
   padding: 0;
   box-shadow: none;
-  font-size: 24px;
   position: relative;
+  width: 24px;
+  height: 24px;
 }
 
 #toggle-counts:hover,
@@ -343,18 +344,11 @@ body {
   box-shadow: none;
 }
 
-#toggle-counts.off::after,
-#toggle-progress.off::after {
-  content: "🚫";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
+#toggle-counts img,
+#toggle-progress img {
+  width: 24px;
+  height: 24px;
+  display: block;
 }
 
 #stats #close-stats {

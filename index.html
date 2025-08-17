@@ -29,7 +29,7 @@
       <div id="progress-counter" hidden></div>
       <header id="hud">
         <button id="btn-settings" aria-label="Configuración">⚙️</button>
-        <button id="btn-stats" aria-label="Mostrar estadísticas">📊</button>
+        <button id="btn-stats" aria-label="Mostrar estadísticas">👁‍🚫</button>
       </header>
 
       <main id="scene">
@@ -78,11 +78,14 @@
           <ul id="button-list"></ul>
           <div class="row">
             <input id="new-label" type="text" placeholder="Nombre del botón" />
-            <input id="new-color" type="color" value="#0044aa" />
+            <input id="new-color" type="color" value="#3366cc" />
             <button id="add-button">Agregar</button>
           </div>
           <div class="row">
-            <button id="toggle-counts">Mostrar contadores</button>
+            <span id="lbl-counts">Mostrar contadores</span>
+            <button id="toggle-counts" aria-label="Mostrar contadores">
+              👁‍🚫
+            </button>
           </div>
           <div class="row">
             <span id="lbl-progress">Mostrar progreso</span>

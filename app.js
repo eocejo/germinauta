@@ -89,7 +89,7 @@ const uuid = () =>
     : String(Date.now() + Math.random());
 
 const defaultSettings = {
-  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#0044aa" }],
+  buttons: [{ id: uuid(), label: t("defaultButton"), color: "#3366cc" }],
   showButtonCounts: true,
   showProgressCounter: false,
   stage: 1,
@@ -99,7 +99,7 @@ const defaultSettings = {
 const LABEL_LIMIT = 8;
 const MAX_BUTTONS = 5;
 const defaultColors = [
-  "#0044aa",
+  "#3366cc",
   "#66ff66",
   "#66ccff",
   "#ff6666",
@@ -147,6 +147,7 @@ newLabel.maxLength = LABEL_LIMIT;
 const newColor = document.getElementById("new-color");
 const buttonList = document.getElementById("button-list");
 const toggleCounts = document.getElementById("toggle-counts");
+const lblCounts = document.getElementById("lbl-counts");
 const toggleProgress = document.getElementById("toggle-progress");
 const lblProgress = document.getElementById("lbl-progress");
 const closeSettings = document.getElementById("close-settings");
@@ -260,9 +261,11 @@ chartRange.innerHTML = `
 `;
 chartRange.value = "month";
 chartRange.addEventListener("change", drawChart);
-toggleCounts.textContent = settings.showButtonCounts
+lblCounts.textContent = settings.showButtonCounts
   ? t("hideCounts")
   : t("showCounts");
+toggleCounts.textContent = settings.showButtonCounts ? "👁️" : "👁‍🚫";
+toggleCounts.setAttribute("aria-label", lblCounts.textContent);
 lblProgress.textContent = settings.showProgressCounter
   ? t("hideProgress")
   : t("showProgress");
@@ -422,7 +425,7 @@ function renderButtons() {
       btn.appendChild(countSpan);
     }
 
-    btn.style.background = b.color || "#0044aa";
+    btn.style.background = b.color || "#3366cc";
     let holdTimeout;
     let held = false;
     btn.addEventListener("pointerdown", (e) => {
@@ -697,10 +700,17 @@ function drawChart() {
 // HUD y Settings
 hudStatsBtn.addEventListener("click", () => {
   statsSheet.hidden = !statsSheet.hidden;
+  hudStatsBtn.textContent = statsSheet.hidden ? "👁‍🚫" : "👁️";
+  hudStatsBtn.setAttribute(
+    "aria-label",
+    statsSheet.hidden ? t("showStats") : t("stats"),
+  );
 });
 
 closeStats.addEventListener("click", () => {
   statsSheet.hidden = true;
+  hudStatsBtn.textContent = "👁‍🚫";
+  hudStatsBtn.setAttribute("aria-label", t("showStats"));
 });
 
 btnSettings.addEventListener("click", () => {
@@ -728,9 +738,11 @@ addButton.addEventListener("click", () => {
 toggleCounts.addEventListener("click", () => {
   settings.showButtonCounts = !settings.showButtonCounts;
   saveJSON(LS_SETTINGS, settings);
-  toggleCounts.textContent = settings.showButtonCounts
+  lblCounts.textContent = settings.showButtonCounts
     ? t("hideCounts")
     : t("showCounts");
+  toggleCounts.textContent = settings.showButtonCounts ? "👁️" : "👁‍🚫";
+  toggleCounts.setAttribute("aria-label", lblCounts.textContent);
   renderButtons();
 });
 
@@ -796,9 +808,11 @@ notePlus.addEventListener("click", () => {
 });
 
 function renderSettings() {
-  toggleCounts.textContent = settings.showButtonCounts
+  lblCounts.textContent = settings.showButtonCounts
     ? t("hideCounts")
     : t("showCounts");
+  toggleCounts.textContent = settings.showButtonCounts ? "👁️" : "👁‍🚫";
+  toggleCounts.setAttribute("aria-label", lblCounts.textContent);
   lblProgress.textContent = settings.showProgressCounter
     ? t("hideProgress")
     : t("showProgress");
@@ -830,7 +844,7 @@ function renderSettings() {
 
     const color = document.createElement("input");
     color.type = "color";
-    color.value = b.color || "#0044aa";
+    color.value = b.color || "#3366cc";
     color.addEventListener("input", () => {
       settings.buttons[idx].color = color.value;
       saveJSON(LS_SETTINGS, settings);

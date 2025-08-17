@@ -1,8 +1,8 @@
 :root {
   --bg: #000000;
   --panel: rgba(255, 255, 255, 0.85);
-  --accent: #66ccff;
-  --btn: #ffcc66;
+  --accent: #0044aa;
+  --btn: #0044aa;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -147,7 +147,7 @@ body {
   border-radius: 50%;
   border: 0;
   background: var(--btn);
-  color: #402;
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
@@ -315,6 +315,29 @@ body {
 .panel button:active {
   transform: translateY(2px) scale(0.96);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#reset-app {
+  background: #ff6666;
+}
+
+#refresh-app {
+  background: #aaaaaa;
+  color: #000000;
+}
+
+#toggle-progress {
+  background: none;
+  color: inherit;
+  padding: 0;
+  box-shadow: none;
+  font-size: 24px;
+}
+
+#toggle-progress:hover,
+#toggle-progress:active {
+  transform: none;
+  box-shadow: none;
 }
 
 #stats #close-stats {

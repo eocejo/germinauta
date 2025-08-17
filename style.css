@@ -1,8 +1,8 @@
 :root {
   --bg: #000000;
   --panel: rgba(255, 255, 255, 0.85);
-  --accent: #3366cc;
-  --btn: #3366cc;
+  --accent: #ffcc00;
+  --btn: #ffcc00;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -256,6 +256,10 @@ body {
   justify-content: flex-end;
 }
 
+#visibility-row {
+  flex-wrap: nowrap;
+}
+
 .row input[type="text"] {
   flex: 1;
   min-width: 0;
@@ -332,8 +336,10 @@ body {
   padding: 0;
   box-shadow: none;
   position: relative;
-  width: 24px;
   height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #toggle-counts:hover,
@@ -346,8 +352,8 @@ body {
 
 #toggle-counts img,
 #toggle-progress img {
-  width: 24px;
-  height: 24px;
+  height: 100%;
+  width: auto;
   display: block;
 }
 

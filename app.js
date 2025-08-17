@@ -4,6 +4,8 @@ const translations = {
     habits: "Habits",
     add: "Add",
     buttonName: "Button name",
+    counts: "Counts",
+    progress: "Progress",
     showCounts: "Show counts",
     hideCounts: "Hide counts",
     showProgress: "Show progress",
@@ -35,6 +37,8 @@ const translations = {
     habits: "Hábitos",
     add: "Agregar",
     buttonName: "Nombre del botón",
+    counts: "Contadores",
+    progress: "Progreso",
     showCounts: "Mostrar contadores",
     hideCounts: "Ocultar contadores",
     showProgress: "Mostrar progreso",
@@ -261,16 +265,20 @@ chartRange.innerHTML = `
 `;
 chartRange.value = "month";
 chartRange.addEventListener("change", drawChart);
-lblCounts.textContent = settings.showButtonCounts
-  ? t("hideCounts")
-  : t("showCounts");
-toggleCounts.textContent = settings.showButtonCounts ? "👁️" : "👁‍🚫";
-toggleCounts.setAttribute("aria-label", lblCounts.textContent);
-lblProgress.textContent = settings.showProgressCounter
-  ? t("hideProgress")
-  : t("showProgress");
-toggleProgress.textContent = settings.showProgressCounter ? "👁️" : "👁‍🚫";
-toggleProgress.setAttribute("aria-label", lblProgress.textContent);
+lblCounts.textContent = t("counts");
+toggleCounts.textContent = "👁️";
+toggleCounts.classList.toggle("off", !settings.showButtonCounts);
+toggleCounts.setAttribute(
+  "aria-label",
+  settings.showButtonCounts ? t("hideCounts") : t("showCounts"),
+);
+lblProgress.textContent = t("progress");
+toggleProgress.textContent = "👁️";
+toggleProgress.classList.toggle("off", !settings.showProgressCounter);
+toggleProgress.setAttribute(
+  "aria-label",
+  settings.showProgressCounter ? t("hideProgress") : t("showProgress"),
+);
 storageErrorText.textContent = t("storageError");
 
 // Init
@@ -700,17 +708,10 @@ function drawChart() {
 // HUD y Settings
 hudStatsBtn.addEventListener("click", () => {
   statsSheet.hidden = !statsSheet.hidden;
-  hudStatsBtn.textContent = statsSheet.hidden ? "👁‍🚫" : "👁️";
-  hudStatsBtn.setAttribute(
-    "aria-label",
-    statsSheet.hidden ? t("showStats") : t("stats"),
-  );
 });
 
 closeStats.addEventListener("click", () => {
   statsSheet.hidden = true;
-  hudStatsBtn.textContent = "👁‍🚫";
-  hudStatsBtn.setAttribute("aria-label", t("showStats"));
 });
 
 btnSettings.addEventListener("click", () => {
@@ -738,22 +739,22 @@ addButton.addEventListener("click", () => {
 toggleCounts.addEventListener("click", () => {
   settings.showButtonCounts = !settings.showButtonCounts;
   saveJSON(LS_SETTINGS, settings);
-  lblCounts.textContent = settings.showButtonCounts
-    ? t("hideCounts")
-    : t("showCounts");
-  toggleCounts.textContent = settings.showButtonCounts ? "👁️" : "👁‍🚫";
-  toggleCounts.setAttribute("aria-label", lblCounts.textContent);
+  toggleCounts.classList.toggle("off", !settings.showButtonCounts);
+  toggleCounts.setAttribute(
+    "aria-label",
+    settings.showButtonCounts ? t("hideCounts") : t("showCounts"),
+  );
   renderButtons();
 });
 
 toggleProgress.addEventListener("click", () => {
   settings.showProgressCounter = !settings.showProgressCounter;
   saveJSON(LS_SETTINGS, settings);
-  lblProgress.textContent = settings.showProgressCounter
-    ? t("hideProgress")
-    : t("showProgress");
-  toggleProgress.textContent = settings.showProgressCounter ? "👁️" : "👁‍🚫";
-  toggleProgress.setAttribute("aria-label", lblProgress.textContent);
+  toggleProgress.classList.toggle("off", !settings.showProgressCounter);
+  toggleProgress.setAttribute(
+    "aria-label",
+    settings.showProgressCounter ? t("hideProgress") : t("showProgress"),
+  );
   updateProgressCounter();
 });
 
@@ -808,16 +809,20 @@ notePlus.addEventListener("click", () => {
 });
 
 function renderSettings() {
-  lblCounts.textContent = settings.showButtonCounts
-    ? t("hideCounts")
-    : t("showCounts");
-  toggleCounts.textContent = settings.showButtonCounts ? "👁️" : "👁‍🚫";
-  toggleCounts.setAttribute("aria-label", lblCounts.textContent);
-  lblProgress.textContent = settings.showProgressCounter
-    ? t("hideProgress")
-    : t("showProgress");
-  toggleProgress.textContent = settings.showProgressCounter ? "👁️" : "👁‍🚫";
-  toggleProgress.setAttribute("aria-label", lblProgress.textContent);
+  lblCounts.textContent = t("counts");
+  toggleCounts.textContent = "👁️";
+  toggleCounts.classList.toggle("off", !settings.showButtonCounts);
+  toggleCounts.setAttribute(
+    "aria-label",
+    settings.showButtonCounts ? t("hideCounts") : t("showCounts"),
+  );
+  lblProgress.textContent = t("progress");
+  toggleProgress.textContent = "👁️";
+  toggleProgress.classList.toggle("off", !settings.showProgressCounter);
+  toggleProgress.setAttribute(
+    "aria-label",
+    settings.showProgressCounter ? t("hideProgress") : t("showProgress"),
+  );
 
   buttonList.innerHTML = "";
   settings.buttons.forEach((b, idx) => {

@@ -1,8 +1,8 @@
 :root {
   --bg: #000000;
   --panel: rgba(255, 255, 255, 0.85);
-  --accent: #0044aa;
-  --btn: #0044aa;
+  --accent: #3366cc;
+  --btn: #3366cc;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
@@ -147,7 +147,7 @@ body {
   border-radius: 50%;
   border: 0;
   background: var(--btn);
-  color: #ffffff;
+  color: #000000;
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);

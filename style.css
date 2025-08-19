@@ -1,7 +1,7 @@
 :root {
   --bg: #000000;
   --panel: rgba(255, 255, 255, 0.85);
-  --accent: #ffcc00;
+  --accent: #3366cc;
   --btn: #ffcc00;
   --shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
@@ -61,7 +61,7 @@ body {
 #hud button {
   font-size: 18px;
   border: 0;
-  background: #0066ff;
+  background: rgba(0, 0, 0, 0.4);
   padding: 6px 10px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -74,7 +74,7 @@ body {
 }
 
 #hud button:hover {
-  background: #0050cc;
+  background: rgba(0, 0, 0, 0.6);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
@@ -121,7 +121,7 @@ body {
 #buttons {
   position: absolute;
   left: 50%;
-  bottom: calc(18px + 40px);
+  bottom: calc(18px + 50px);
   transform: translateX(-50%);
   display: flex;
   flex-wrap: nowrap;

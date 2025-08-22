@@ -468,48 +468,37 @@ function renderButtons() {
 
 function renderStage() {
   const s = settings.stage;
-  if (s === 1) {
-    if (creatureEl.tagName !== "VIDEO") {
-      const video = document.createElement("video");
-      video.id = "creature";
-      video.autoplay = true;
-      video.loop = true;
-      video.muted = true;
-      video.setAttribute("muted", "");
-      video.playsInline = true;
-      video.setAttribute("playsinline", "");
-      video.setAttribute("webkit-playsinline", "");
-      video.src = "assets/videos/stage1.mov";
-      creatureEl.replaceWith(video);
-      creatureEl = video;
-    } else {
-      creatureEl.src = "assets/videos/stage1.mov";
-      creatureEl.muted = true;
-      creatureEl.setAttribute("muted", "");
-      creatureEl.setAttribute("playsinline", "");
-      creatureEl.setAttribute("webkit-playsinline", "");
-      creatureEl.autoplay = true;
-      creatureEl.loop = true;
-    }
-    const playCreature = () => creatureEl.play().catch(() => {});
-    if (creatureEl.readyState >= 2) {
-      playCreature();
-    } else {
-      creatureEl.addEventListener("canplay", playCreature, { once: true });
-    }
-    document.addEventListener("pointerdown", playCreature, { once: true });
+  const videoSrc =
+    s === 1 ? "assets/videos/stage1.mov" : "assets/videos/stage2.mov";
+  if (creatureEl.tagName !== "VIDEO") {
+    const video = document.createElement("video");
+    video.id = "creature";
+    video.autoplay = true;
+    video.loop = true;
+    video.muted = true;
+    video.setAttribute("muted", "");
+    video.playsInline = true;
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    video.src = videoSrc;
+    creatureEl.replaceWith(video);
+    creatureEl = video;
   } else {
-    if (creatureEl.tagName !== "IMG") {
-      const img = document.createElement("img");
-      img.id = "creature";
-      img.alt = "Criatura";
-      img.src = `assets/images/stage${s}.png`;
-      creatureEl.replaceWith(img);
-      creatureEl = img;
-    } else {
-      creatureEl.src = `assets/images/stage${s}.png`;
-    }
+    creatureEl.src = videoSrc;
+    creatureEl.muted = true;
+    creatureEl.setAttribute("muted", "");
+    creatureEl.setAttribute("playsinline", "");
+    creatureEl.setAttribute("webkit-playsinline", "");
+    creatureEl.autoplay = true;
+    creatureEl.loop = true;
   }
+  const playCreature = () => creatureEl.play().catch(() => {});
+  if (creatureEl.readyState >= 2) {
+    playCreature();
+  } else {
+    creatureEl.addEventListener("canplay", playCreature, { once: true });
+  }
+  document.addEventListener("pointerdown", playCreature, { once: true });
 }
 
 function playTapSound() {

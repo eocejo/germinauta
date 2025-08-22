@@ -1,4 +1,4 @@
-const CACHE = "habit-reinforcer-v6";
+const CACHE = "habit-reinforcer-v7";
 const ASSETS = [
   "./",
   "./index.html",
@@ -12,11 +12,7 @@ const ASSETS = [
   "./assets/icons/ojo-novisible.png",
   "./assets/images/background.png",
   "./assets/videos/stage1.mov",
-  "./assets/images/stage2.png",
-  "./assets/images/stage3.png",
-  "./assets/images/stage4.png",
-  "./assets/images/stage5.png",
-  "./assets/images/stage6.png",
+  "./assets/videos/stage2.mov",
   "./assets/sounds/tap.wav",
   "./assets/sounds/stage-change.wav",
   "./assets/sounds/action-complete.wav",
